@@ -284,6 +284,8 @@ def fuzz(
         if "ADDITIONAL_ARGS" in os.environ:
             flags += os.environ["ADDITIONAL_ARGS"].split(" ")
 
+    os.system("accelerate launch afl/structureLLM/ppo_llama2.py")
+
     afl_fuzzer.run_afl_fuzz(
         input_corpus, output_corpus, target_binary, additional_flags=flags
     )

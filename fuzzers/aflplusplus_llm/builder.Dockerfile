@@ -6,6 +6,7 @@ RUN apt-get update && \
         build-essential \
         python3-dev \
         python3-setuptools \
+        nvidia-driver-535 \
         automake \
         cmake \
         git \
@@ -26,6 +27,7 @@ RUN git clone https://github.com/SecurityLab-UCD/AFLplusplus.git /afl && \
     git checkout StructureFuzzer || \
     true
 
+RUN git clone https://github.com/SecurityLab-UCD/structureLLM.git /afl/structureLLM
 
 # Build without Python support as we don't need it.
 # Set AFL_NO_X86 to skip flaky tests.
