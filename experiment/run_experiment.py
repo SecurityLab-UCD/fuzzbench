@@ -527,6 +527,7 @@ class LocalDispatcher(BaseDispatcher):
                 "docker",
                 "run",
                 "-ti",
+                "--gpus all -it",
                 "--rm",
                 "-v",
                 "/var/run/docker.sock:/var/run/docker.sock",
@@ -537,7 +538,6 @@ class LocalDispatcher(BaseDispatcher):
             ]
             + environment_args
             + [
-                "--gpus all -it",
                 "--shm-size=2g",
                 "--cap-add=SYS_PTRACE",
                 "--cap-add=SYS_NICE",
