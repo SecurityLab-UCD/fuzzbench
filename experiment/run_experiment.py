@@ -546,7 +546,7 @@ class LocalDispatcher(BaseDispatcher):
                 "/bin/bash",
                 "-c",
                 "echo ",
-                '"${EXPERIMENT_FILESTORE}/${EXPERIMENT}/input/" ${WORK} && ',
+                "${EXPERIMENT_FILESTORE}${EXPERIMENT}${WORK} && ",
                 "rsync -r "
                 '"${EXPERIMENT_FILESTORE}/${EXPERIMENT}/input/" ${WORK} && '
                 "mkdir ${WORK}/src && "
