@@ -537,7 +537,7 @@ class LocalDispatcher(BaseDispatcher):
             ]
             + environment_args
             + [
-                "—-gpus all -it",
+                "--gpus all -it",
                 "--shm-size=2g",
                 "--cap-add=SYS_PTRACE",
                 "--cap-add=SYS_NICE",
