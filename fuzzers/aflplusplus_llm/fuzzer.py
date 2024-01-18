@@ -236,6 +236,8 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
         shutil.copy("/get_frida_entry.sh", build_directory)
     if os.path.exists("/afl/custom_mutators/aflpp/aflpp-mutator.so"):
         shutil.copy("/afl/custom_mutators/aflpp/aflpp-mutator.so", build_directory)
+    if os.path.exists("/afl/structureLLM"):
+        shutil.copytree("/afl/structureLLM", build_directory + "/structureLLM/")
 
 
 # pylint: disable=too-many-arguments
@@ -284,7 +286,9 @@ def fuzz(
         if "ADDITIONAL_ARGS" in os.environ:
             flags += os.environ["ADDITIONAL_ARGS"].split(" ")
 
-    os.system("accelerate launch afl/structureLLM/ppo_llama2.py")
+    os.system(
+        "accelerate launch --num_processes 8 --mixed_precision fp16 structureLLM/ppo_llama2.py"
+    )
 
     afl_fuzzer.run_afl_fuzz(
         input_corpus, output_corpus, target_binary, additional_flags=flags
