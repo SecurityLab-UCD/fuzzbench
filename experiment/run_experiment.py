@@ -526,6 +526,7 @@ class LocalDispatcher(BaseDispatcher):
             [
                 "docker",
                 "run",
+                "--gpus all",
                 "-ti",
                 "--rm",
                 "-v",
@@ -544,8 +545,6 @@ class LocalDispatcher(BaseDispatcher):
                 docker_image_url,
                 "/bin/bash",
                 "-c",
-                "echo ",
-                "${EXPERIMENT_FILESTORE}${EXPERIMENT}${WORK} && ",
                 "rsync -r "
                 '"${EXPERIMENT_FILESTORE}/${EXPERIMENT}/input/" ${WORK} && '
                 "mkdir ${WORK}/src && "
