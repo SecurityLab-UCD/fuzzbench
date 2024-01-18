@@ -28,7 +28,9 @@ RUN git clone https://github.com/SecurityLab-UCD/AFLplusplus.git /afl && \
     git checkout StructureFuzzer || \
     true
 
-RUN git clone https://github.com/SecurityLab-UCD/structureLLM.git /afl/structureLLM 
+RUN git clone https://github.com/SecurityLab-UCD/structureLLM.git /afl/structureLLM
+
+RUN cd /afl/structureLLM && git pull
 
 # Build without Python support as we don't need it.
 # Set AFL_NO_X86 to skip flaky tests.
