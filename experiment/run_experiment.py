@@ -526,9 +526,9 @@ class LocalDispatcher(BaseDispatcher):
             [
                 "docker",
                 "run",
-                "--gpus all",
                 "-ti",
                 "--rm",
+                "--gpus all",
                 "-v",
                 "/var/run/docker.sock:/var/run/docker.sock",
                 "-v",
