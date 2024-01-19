@@ -555,6 +555,7 @@ class LocalDispatcher(BaseDispatcher):
                 "/bin/bash",  # Open shell if experiment fails.
             ]
         )
+        logs.info("COMMAND::: %s", command)
         logs.info("Starting dispatcher with container name: %s", container_name)
         return new_process.execute(command, write_to_stdout=True)
 
