@@ -524,11 +524,11 @@ class LocalDispatcher(BaseDispatcher):
         ]
         command = (
             [
-                "nvidia-docker",
+                "docker",
                 "run",
                 "-ti",
                 "--rm",
-                # "--gpus all",
+                "--gpus all",
                 "-v",
                 "/var/run/docker.sock:/var/run/docker.sock",
                 "-v",
