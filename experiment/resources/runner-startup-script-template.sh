@@ -56,6 +56,7 @@ docker run \
 -e LOCAL_EXPERIMENT={{local_experiment}} \
 {% if not local_experiment %}--name=runner-container {% endif %}\
 --shm-size=2g \
+--gpus all\
 --cap-add SYS_NICE --cap-add SYS_PTRACE \
 --security-opt seccomp=unconfined \
 {{docker_image_url}} 2>&1 | tee /tmp/runner-log-{{trial_id}}.txt
