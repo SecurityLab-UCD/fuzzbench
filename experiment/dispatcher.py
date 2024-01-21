@@ -57,27 +57,28 @@ def _initialize_experiment_in_db(experiment_config: dict):
     """Initializes |experiment| in the database by creating the experiment
     entity."""
     with db_utils.session_scope() as session:
-        experiment_exists = session.query(models.Experiment).filter(
-            models.Experiment.name == experiment_config['experiment']).first()
+        experiment_exists = (session.query(models.Experiment).filter(
+            models.Experiment.name == experiment_config["experiment"]).first())
     if experiment_exists:
-        raise Exception('Experiment already exists in database.')
+        raise Exception("Experiment already exists in database.")
 
     db_utils.add_all([
         db_utils.get_or_create(
             models.Experiment,
-            name=experiment_config['experiment'],
-            git_hash=experiment_config['git_hash'],
-            private=experiment_config.get('private', True),
-            experiment_filestore=experiment_config['experiment_filestore'],
-            description=experiment_config['description']),
+            name=experiment_config["experiment"],
+            git_hash=experiment_config["git_hash"],
+            private=experiment_config.get("private", True),
+            experiment_filestore=experiment_config["experiment_filestore"],
+            description=experiment_config["description"],
+        ),
     ])
 
 
 def _record_experiment_time_ended(experiment_name: str):
     """Record |experiment| end time in the database."""
     with db_utils.session_scope() as session:
-        experiment = session.query(models.Experiment).filter(
-            models.Experiment.name == experiment_name).one()
+        experiment = (session.query(models.Experiment).filter(
+            models.Experiment.name == experiment_name).one())
     experiment.time_ended = datetime.datetime.utcnow()
     db_utils.add_all([experiment])
 
@@ -95,12 +96,12 @@ class Experiment:
     def __init__(self, experiment_config_filepath: str):
         self.config = yaml_utils.read(experiment_config_filepath)
 
-        self.benchmarks = self.config['benchmarks']
-        self.fuzzers = self.config['fuzzers']
-        self.num_trials = self.config['trials']
-        self.experiment_name = self.config['experiment']
-        self.git_hash = self.config['git_hash']
-        self.preemptible = self.config.get('preemptible_runners')
+        self.benchmarks = self.config["benchmarks"]
+        self.fuzzers = self.config["fuzzers"]
+        self.num_trials = self.config["trials"]
+        self.experiment_name = self.config["experiment"]
+        self.git_hash = self.config["git_hash"]
+        self.preemptible = self.config.get("preemptible_runners")
 
 
 def build_images_for_trials(fuzzers: List[str], benchmarks: List[str],
@@ -120,10 +121,12 @@ def build_images_for_trials(fuzzers: List[str], benchmarks: List[str],
     trials = []
     for fuzzer, benchmark in build_successes:
         fuzzer_benchmark_trials = [
-            models.Trial(fuzzer=fuzzer,
-                         experiment=experiment_name,
-                         benchmark=benchmark,
-                         preemptible=preemptible) for _ in range(num_trials)
+            models.Trial(
+                fuzzer=fuzzer,
+                experiment=experiment_name,
+                benchmark=benchmark,
+                preemptible=preemptible,
+            ) for _ in range(num_trials)
         ]
         trials.extend(fuzzer_benchmark_trials)
     return trials
@@ -131,11 +134,11 @@ def build_images_for_trials(fuzzers: List[str], benchmarks: List[str],
 
 def dispatcher_main():
     """Do the experiment and report results."""
-    logs.info('Starting experiment.')
+    logs.info("Starting experiment.")
 
     # Set this here because we get failures if we do it in measurer for some
     # reason.
-    multiprocessing.set_start_method('spawn')
+    multiprocessing.set_start_method("spawn")
     db_utils.initialize()
     if experiment_utils.is_local_experiment():
         models.Base.metadata.create_all(db_utils.engine)
@@ -145,12 +148,15 @@ def dispatcher_main():
 
     _initialize_experiment_in_db(experiment.config)
 
-    trials = build_images_for_trials(experiment.fuzzers, experiment.benchmarks,
-                                     experiment.num_trials,
-                                     experiment.preemptible)
+    trials = build_images_for_trials(
+        experiment.fuzzers,
+        experiment.benchmarks,
+        experiment.num_trials,
+        experiment.preemptible,
+    )
     _initialize_trials_in_db(trials)
 
-    create_work_subdirs(['experiment-folders', 'measurement-folders'])
+    create_work_subdirs(["experiment-folders", "measurement-folders"])
 
     # Start measurer and scheduler in seperate threads/processes.
     scheduler_loop_thread = threading.Thread(target=scheduler.schedule_loop,
@@ -165,6 +171,11 @@ def dispatcher_main():
     is_complete = False
     while True:
         time.sleep(LOOP_WAIT_SECONDS)
+        print(
+            "scheduler_loop_thread, measurer_main_process",
+            scheduler_loop_thread.is_alive(),
+            measurer_main_process.is_alive(),
+        )
         if not scheduler_loop_thread.is_alive():
             is_complete = not measurer_main_process.is_alive()
 
@@ -181,19 +192,19 @@ def dispatcher_main():
     measurer_main_process.join()
 
     _record_experiment_time_ended(experiment.experiment_name)
-    logs.info('Experiment ended.')
+    logs.info("Experiment ended.")
 
 
 def main():
     """Do the experiment and report results."""
     logs.initialize(default_extras={
-        'component': 'dispatcher',
+        "component": "dispatcher",
     })
 
     try:
         dispatcher_main()
     except Exception as error:
-        logs.error('Error conducting experiment.')
+        logs.error("Error conducting experiment.")
         raise error
 
     if experiment_utils.is_local_experiment():
@@ -208,5 +219,5 @@ def main():
     return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())
