@@ -16,6 +16,8 @@
 
 import os
 import shutil
+import time
+import multiprocessing
 
 from fuzzers.afl import fuzzer as afl_fuzzer
 from fuzzers import utils
@@ -50,11 +52,8 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
     # For bug type benchmarks we have to instrument via native clang pcguard :(
     build_flags = os.environ["CFLAGS"]
 
-    if (
-        build_flags.find("array-bounds") != -1
-        and "qemu" not in build_modes
-        and "classic" not in build_modes
-    ):
+    if (build_flags.find("array-bounds") != -1 and "qemu" not in build_modes and
+            "classic" not in build_modes):
         if "gcc" not in build_modes:
             build_modes[0] = "native"
 
@@ -191,15 +190,15 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
         new_env["OUT"] = cmplog_build_directory
         fuzz_target = os.getenv("FUZZ_TARGET")
         if fuzz_target:
-            new_env["FUZZ_TARGET"] = os.path.join(
-                cmplog_build_directory, os.path.basename(fuzz_target)
-            )
+            new_env["FUZZ_TARGET"] = os.path.join(cmplog_build_directory,
+                                                  os.path.basename(fuzz_target))
 
         print("Re-building benchmark for CmpLog fuzzing target")
         utils.build_benchmark(env=new_env)
 
     if "symcc" in build_modes:
-        symcc_build_directory = get_uninstrumented_build_directory(build_directory)
+        symcc_build_directory = get_uninstrumented_build_directory(
+            build_directory)
         os.mkdir(symcc_build_directory)
 
         # symcc requires an build with different instrumentation.
@@ -219,9 +218,8 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
         new_env["OUT"] = symcc_build_directory
         fuzz_target = os.getenv("FUZZ_TARGET")
         if fuzz_target:
-            new_env["FUZZ_TARGET"] = os.path.join(
-                symcc_build_directory, os.path.basename(fuzz_target)
-            )
+            new_env["FUZZ_TARGET"] = os.path.join(symcc_build_directory,
+                                                  os.path.basename(fuzz_target))
 
         print("Re-building benchmark for symcc fuzzing target")
         utils.build_benchmark(env=new_env)
@@ -235,9 +233,25 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
         shutil.copy("/afl/afl-frida-trace.so", build_directory)
         shutil.copy("/get_frida_entry.sh", build_directory)
     if os.path.exists("/afl/custom_mutators/aflpp/aflpp-mutator.so"):
-        shutil.copy("/afl/custom_mutators/aflpp/aflpp-mutator.so", build_directory)
+        shutil.copy("/afl/custom_mutators/aflpp/aflpp-mutator.so",
+                    build_directory)
     if os.path.exists("/afl/structureLLM"):
         shutil.copytree("/afl/structureLLM", build_directory + "/structureLLM/")
+
+
+def accelerate_run():
+    os.system(
+        "accelerate launch --num_processes 8 --mixed_precision fp16 structureLLM/ppo_llama2.py"
+    )
+
+
+def afl_fuzzer_run(input_corpus, output_corpus, target_binary, flags):
+    time.sleep(450)
+    print("Start run afl_fuzzer")
+    afl_fuzzer.run_afl_fuzz(input_corpus,
+                            output_corpus,
+                            target_binary,
+                            additional_flags=flags)
 
 
 # pylint: disable=too-many-arguments
@@ -252,11 +266,11 @@ def fuzz(
     """Run fuzzer."""
     # Calculate CmpLog binary path from the instrumented target binary.
     target_binary_directory = os.path.dirname(target_binary)
-    cmplog_target_binary_directory = get_cmplog_build_directory(target_binary_directory)
+    cmplog_target_binary_directory = get_cmplog_build_directory(
+        target_binary_directory)
     target_binary_name = os.path.basename(target_binary)
-    cmplog_target_binary = os.path.join(
-        cmplog_target_binary_directory, target_binary_name
-    )
+    cmplog_target_binary = os.path.join(cmplog_target_binary_directory,
+                                        target_binary_name)
 
     afl_fuzzer.prepare_fuzz_environment(input_corpus)
     # decomment this to enable libdislocator.
@@ -286,10 +300,14 @@ def fuzz(
         if "ADDITIONAL_ARGS" in os.environ:
             flags += os.environ["ADDITIONAL_ARGS"].split(" ")
 
-    os.system(
-        "accelerate launch --num_processes 8 --mixed_precision fp16 structureLLM/ppo_llama2.py"
-    )
+    acc_p = multiprocessing.Process(target=accelerate_run)
+    afl_p = multiprocessing.Process(target=afl_fuzzer_run,
+                                    args=(input_corpus, output_corpus,
+                                          target_binary, flags))
 
-    afl_fuzzer.run_afl_fuzz(
-        input_corpus, output_corpus, target_binary, additional_flags=flags
-    )
+    acc_p.start()
+    afl_p.start()
+
+    # Wait for both processes to finish
+    acc_p.join()
+    afl_p.join()
