@@ -137,6 +137,7 @@ docker run \\
 -e LOCAL_EXPERIMENT=False \\
 --name=runner-container \\
 --shm-size=2g \\
+--gpus all \\
 --cap-add SYS_NICE --cap-add SYS_PTRACE \\
 --security-opt seccomp=unconfined \\
 {docker_image_url} 2>&1 | tee /tmp/runner-log-9.txt"""
