@@ -69,6 +69,7 @@ def test_get_rules_for_runner_image():
         'run-afl-zlib: .afl-zlib-runner\n' + ('\
 \tdocker run \\\n\
 \t--cpus=1 \\\n\
+\t--gpus all \\\n\
 \t--shm-size=2g \\\n\
 \t--cap-add SYS_NICE \\\n\
 \t--cap-add SYS_PTRACE \\\n\
@@ -96,6 +97,7 @@ def test_get_rules_for_runner_image():
         'test-run-afl-zlib: .afl-zlib-runner\n' + ('\
 \tdocker run \\\n\
 \t--cpus=1 \\\n\
+\t--gpus all \\\n\
 \t--shm-size=2g \\\n\
 \t--cap-add SYS_NICE \\\n\
 \t--cap-add SYS_PTRACE \\\n\
@@ -111,6 +113,7 @@ def test_get_rules_for_runner_image():
         'debug-builder-afl-zlib: .afl-zlib-builder-debug\n' + ('\
 \tdocker run \\\n\
 \t--cpus=1 \\\n\
+\t--gpus all \\\n\
 \t--shm-size=2g \\\n\
 \t--cap-add SYS_NICE \\\n\
 \t--cap-add SYS_PTRACE \\\n\
