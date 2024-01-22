@@ -130,8 +130,10 @@ def run_local_instance(startup_script: Optional[str] = None) -> bool:
     """Does the equivalent of "create_instance" for local experiments, runs
     |startup_script| in the background."""
     command = ['/bin/bash', startup_script]
+    print("command:::",command)
     # pylint: disable=consider-using-with
-    subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    a=subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    print("aaaa:::",a)
     return True
 
 
