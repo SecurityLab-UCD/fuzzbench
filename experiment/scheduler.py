@@ -656,6 +656,7 @@ def start_trials(trials, experiment_config: dict, pool, core_allocation=None):
     """Start all |trials| that are possible to start. Marks the ones that were
     started as started."""
     logger.info('Starting trials.')
+    print("experiment_config::", experiment_config)
     trial_id_mapping = {trial.id: trial for trial in trials}
 
     # Shuffle trials so that we don't create trials for the same fuzzer
@@ -726,7 +727,7 @@ def _start_trial(trial: TrialProxy, experiment_config: dict, cpuset=None):
     # so that measuring a schedule doesn't require waiting until the map call
     # that calls this function completely terminates.
     _initialize_logs(experiment_config['experiment'])
-    logger.info('Start trial %d.', trial.id)
+    logger.info('Start trial %d...', trial.id)
     started = create_trial_instance(trial.fuzzer, trial.benchmark, trial.id,
                                     experiment_config, trial.preemptible,
                                     cpuset)
@@ -798,6 +799,7 @@ def create_trial_instance(  # pylint: disable=too-many-arguments
     startup_script = render_startup_script_template(instance_name, fuzzer,
                                                     benchmark, trial_id,
                                                     experiment_config, cpuset)
+    print("startup_script:::",startup_script)
     startup_script_path = f'/tmp/{instance_name}-start-docker.sh'
     with open(startup_script_path, 'w', encoding='utf-8') as file_handle:
         file_handle.write(startup_script)
