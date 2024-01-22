@@ -360,7 +360,6 @@ def start_experiment_from_full_config(config):
 
     # Make sure we can connect to database.
     local_experiment = config.get("local_experiment", False)
-    print("local_experiment??", local_experiment)
     if not local_experiment:
         if "POSTGRES_PASSWORD" not in os.environ:
             raise ValidationError("Must set POSTGRES_PASSWORD environment variable.")
@@ -529,8 +528,8 @@ class LocalDispatcher(BaseDispatcher):
                 "run",
                 "-ti",
                 "--rm",
-                # "--gpus",
-                # "all",
+                "--gpus",
+                "all",
                 "-v",
                 "/var/run/docker.sock:/var/run/docker.sock",
                 "-v",
@@ -556,7 +555,6 @@ class LocalDispatcher(BaseDispatcher):
                 "/bin/bash",  # Open shell if experiment fails.
             ]
         )
-        logs.info("COMMAND::: %s", command)
         logs.info("Starting dispatcher with container name: %s", container_name)
         return new_process.execute(command, write_to_stdout=True)
 
