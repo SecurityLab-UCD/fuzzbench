@@ -175,12 +175,14 @@ def measure_all_trials(
 
     experiment_folders_dir = experiment_utils.get_experiment_folders_dir()
     if not exists_in_experiment_filestore(experiment_folders_dir):
+        print("measure_all_trials exit in exists_in_experiment_filestore")
         return True
 
     max_cycle = _time_to_cycle(max_total_time)
     unmeasured_snapshots = get_unmeasured_snapshots(experiment, max_cycle)
 
     if not unmeasured_snapshots:
+        print("measure_all_trials exit in unmeasured_snapshots")
         return False
 
     measure_trial_coverage_args = [
