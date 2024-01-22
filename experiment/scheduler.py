@@ -43,7 +43,7 @@ FAIL_WAIT_SECONDS = 10 * 60
 
 logger = logs.Logger()  # pylint: disable=invalid-name
 
-RESOURCES_DIR = os.path.join(utils.ROOT_DIR, 'experiment', 'resources')
+RESOURCES_DIR = os.path.join(utils.ROOT_DIR, "experiment", "resources")
 
 JINJA_ENV = jinja2.Environment(
     undefined=jinja2.StrictUndefined,
@@ -59,8 +59,9 @@ RETRY_WAIT_SECONDS = 3
 def datetime_now() -> datetime.datetime:
     """Return datetime.datetime.utcnow(). This function is needed for
     mocking."""
-    return datetime.datetime.now(
-        datetime.timezone.utc).replace(tzinfo=datetime.timezone.utc)
+    return datetime.datetime.now(datetime.timezone.utc).replace(
+        tzinfo=datetime.timezone.utc
+    )
 
 
 # TODO(metzman): Figure out what are the best practices for the functions which
@@ -70,7 +71,9 @@ def datetime_now() -> datetime.datetime:
 # prevents us unless handled intelligently.
 def get_nonpreempted_trials(experiment: str):
     """Returns a query of trials in |experiment|."""
-    not_preempted_filter = models.Trial.preempted == False  # pylint: disable=singleton-comparison
+    not_preempted_filter = (
+        models.Trial.preempted == False
+    )  # pylint: disable=singleton-comparison
     return get_experiment_trials(experiment).filter(not_preempted_filter)
 
 
@@ -83,47 +86,57 @@ def get_running_trials(experiment: str):
     """Returns trial entities from |experiment| that have been marked started
     but not marked ended."""
     return get_nonpreempted_trials(experiment).filter(
-        models.Trial.time_ended.is_(None), STARTED_TRIALS_FILTER)
+        models.Trial.time_ended.is_(None), STARTED_TRIALS_FILTER
+    )
 
 
 def get_expired_trials(experiment: str, max_total_time: int):
     """Returns trial entities from |experiment| that have not ended and were
     started more than |max_total_time| + |GRACE_TIME_SECONDS| ago."""
     earliest_nonexpired_dt = datetime_now() - datetime.timedelta(
-        seconds=max_total_time + GRACE_TIME_SECONDS)
+        seconds=max_total_time + GRACE_TIME_SECONDS
+    )
 
-    return get_nonpreempted_trials(experiment).filter(
-        models.Trial.time_started <= earliest_nonexpired_dt).filter(
-            models.Trial.time_ended.is_(None))
+    return (
+        get_nonpreempted_trials(experiment)
+        .filter(models.Trial.time_started <= earliest_nonexpired_dt)
+        .filter(models.Trial.time_ended.is_(None))
+    )
 
 
 def all_trials_ended(experiment: str) -> bool:
     """Return a bool if there are any trials in |experiment| that have not
     started."""
     try:
-        return not get_experiment_trials(experiment).filter(
-            models.Trial.time_ended.is_(None)).all()
+        return (
+            not get_experiment_trials(experiment)
+            .filter(models.Trial.time_ended.is_(None))
+            .all()
+        )
     except RuntimeError:
-        logger.error('Failed to check whether all trials ended.')
+        logger.error("Failed to check whether all trials ended.")
         return False
 
 
 def delete_instances(instances, experiment_config):
     """Deletes |instances|."""
-    cloud_project = experiment_config['cloud_project']
-    cloud_compute_zone = experiment_config['cloud_compute_zone']
+    cloud_project = experiment_config["cloud_project"]
+    cloud_compute_zone = experiment_config["cloud_compute_zone"]
     instances_to_delete = [
-        i for i in gce.get_instances(cloud_project, cloud_compute_zone)
+        i
+        for i in gce.get_instances(cloud_project, cloud_compute_zone)
         if i in instances
     ]
-    return gcloud.delete_instances(instances_to_delete,
-                                   experiment_config['cloud_compute_zone'])
+    return gcloud.delete_instances(
+        instances_to_delete, experiment_config["cloud_compute_zone"]
+    )
 
 
 def end_expired_trials(experiment_config: dict, core_allocation: dict):
     """Get all expired trials, end them and return them."""
-    trials_past_expiry = get_expired_trials(experiment_config['experiment'],
-                                            experiment_config['max_total_time'])
+    trials_past_expiry = get_expired_trials(
+        experiment_config["experiment"], experiment_config["max_total_time"]
+    )
     expired_instances = []
     expired_trial_ids = []
     current_dt = datetime_now()
@@ -131,7 +144,9 @@ def end_expired_trials(experiment_config: dict, core_allocation: dict):
         trial_id = trial.id
         expired_instances.append(
             experiment_utils.get_trial_instance_name(
-                experiment_config['experiment'], trial_id))
+                experiment_config["experiment"], trial_id
+            )
+        )
         expired_trial_ids.append(trial_id)
         trial.time_ended = current_dt
 
@@ -145,11 +160,12 @@ def end_expired_trials(experiment_config: dict, core_allocation: dict):
                 core_allocation[cpuset] = None
 
     if not experiment_utils.is_local_experiment() and not delete_instances(
-            expired_instances, experiment_config):
+        expired_instances, experiment_config
+    ):
         # If we failed to delete some instances, then don't update the status
         # of expired trials in database as we don't know which instances were
         # successfully deleted. Wait for next iteration of end_expired_trials.
-        logger.error('Failed to delete instances after trial expiry.')
+        logger.error("Failed to delete instances after trial expiry.")
         return
 
     db_utils.bulk_save(trials_past_expiry)
@@ -158,8 +174,11 @@ def end_expired_trials(experiment_config: dict, core_allocation: dict):
 def get_experiment_trials(experiment: str):
     """Returns a query for trials in |experiment| ordered by id."""
     with db_utils.session_scope() as session:
-        return session.query(models.Trial).filter(
-            models.Trial.experiment == experiment).order_by(models.Trial.id)
+        return (
+            session.query(models.Trial)
+            .filter(models.Trial.experiment == experiment)
+            .order_by(models.Trial.id)
+        )
 
 
 def get_started_trials(experiment: str):
@@ -177,10 +196,12 @@ def get_last_trial_time_started(experiment: str):
     # Don't use get_experiment_trials because it already orders the results by
     # id.
     with db_utils.session_scope() as session:
-        last_trial = session.query(models.Trial).filter(
-            models.Trial.experiment == experiment,
-            STARTED_TRIALS_FILTER).order_by(
-                models.Trial.time_started.desc()).first()
+        last_trial = (
+            session.query(models.Trial)
+            .filter(models.Trial.experiment == experiment, STARTED_TRIALS_FILTER)
+            .order_by(models.Trial.time_started.desc())
+            .first()
+        )
         return last_trial.time_started
 
 
@@ -203,6 +224,7 @@ class TrialInstanceManager:  # pylint: disable=too-many-instance-attributes
     handle_preempted_trials method should be called in the scheduling loop.
     See the docstring for handle_preempted_trials for how it works.
     """
+
     # Hard limit on the number of nonpreemptibles we will use. This bounds
     # costs.
     MAX_NONPREEMPTIBLES = 500
@@ -225,17 +247,20 @@ class TrialInstanceManager:  # pylint: disable=too-many-instance-attributes
         # specified preemptible_runners.
         self.max_nonpreemptibles = min(
             math.ceil(self.num_trials * self.NONPREEMPTIBLES_FRACTION),
-            self.MAX_NONPREEMPTIBLES)
-        logger.info('Max nonpreemptibles: %d.', self.max_nonpreemptibles)
+            self.MAX_NONPREEMPTIBLES,
+        )
+        logger.info("Max nonpreemptibles: %d.", self.max_nonpreemptibles)
 
         # Attributes for preemptible retry window. The preemptible retry window
         # is a time period that starts when the last initial trial is started.
         # It determines how long we can retry preempted trials using
         # preemptibles. This bounds the length of time an experiment lasts.
-        self.preemptible_window = (experiment_config['max_total_time'] *
-                                   self.PREEMPTIBLE_WINDOW_MULTIPLIER)
+        self.preemptible_window = (
+            experiment_config["max_total_time"] * self.PREEMPTIBLE_WINDOW_MULTIPLIER
+        )
         self._initial_trials = list(
-            get_experiment_trials(experiment_config['experiment']))
+            get_experiment_trials(experiment_config["experiment"])
+        )
         self._max_time_started = None
 
         self.preempted_trials = {}
@@ -243,10 +268,12 @@ class TrialInstanceManager:  # pylint: disable=too-many-instance-attributes
 
         # Filter operations happening before the experiment started.
         with db_utils.session_scope() as session:
-            self.last_preemptible_query = (session.query(
-                models.Experiment).filter(
-                    models.Experiment.name == experiment_config['experiment']
-                ).one().time_created.replace(tzinfo=datetime.timezone.utc))
+            self.last_preemptible_query = (
+                session.query(models.Experiment)
+                .filter(models.Experiment.name == experiment_config["experiment"])
+                .one()
+                .time_created.replace(tzinfo=datetime.timezone.utc)
+            )
 
     def _get_max_time_started(self):
         """Returns the last time_started of the self._initial_trials. Returns
@@ -271,8 +298,7 @@ class TrialInstanceManager:  # pylint: disable=too-many-instance-attributes
             max_time_started = max(time_started, max_time_started)
 
         assert max_time_started is not None
-        max_time_started = max_time_started.replace(
-            tzinfo=datetime.timezone.utc)
+        max_time_started = max_time_started.replace(tzinfo=datetime.timezone.utc)
         self._max_time_started = max_time_started
         return max_time_started
 
@@ -283,7 +309,8 @@ class TrialInstanceManager:  # pylint: disable=too-many-instance-attributes
             return False
 
         preemptible_window_end_time = max_time_started + datetime.timedelta(
-            seconds=self.preemptible_window)
+            seconds=self.preemptible_window
+        )
 
         return datetime_now() > preemptible_window_end_time
 
@@ -291,7 +318,7 @@ class TrialInstanceManager:  # pylint: disable=too-many-instance-attributes
         """Returns True if we can start a preemptible trial.
         |preemptible_starts| is the number of preemptibles we've already
         started."""
-        if not self.experiment_config.get('preemptible_runners'):
+        if not self.experiment_config.get("preemptible_runners"):
             # This code shouldn't be executed in a nonpreemptible experiment.
             # But just in case it is, it's not OK to create a preemptible trial
             # in a non-preemptible experiment.
@@ -316,7 +343,7 @@ class TrialInstanceManager:  # pylint: disable=too-many-instance-attributes
 
     def can_start_nonpreemptible(self, nonpreemptible_starts: int) -> bool:
         """Returns True if we can start a nonpreemptible trial."""
-        if not self.experiment_config.get('preemptible_runners'):
+        if not self.experiment_config.get("preemptible_runners"):
             # This code shouldn't be executed in a nonpreemptible experiment.
             # But just in case it is, it's always OK to start a non-preemptible
             # trial in a non-preemptible experiment.
@@ -332,25 +359,30 @@ class TrialInstanceManager:  # pylint: disable=too-many-instance-attributes
 
     def get_nonpreemptible_starts(self) -> int:
         """Returns the count of nonpreemptible trials that have been started."""
-        return get_started_trials(self.experiment_config['experiment']).filter(
-            models.Trial.preemptible.is_(False)).count()
+        return (
+            get_started_trials(self.experiment_config["experiment"])
+            .filter(models.Trial.preemptible.is_(False))
+            .count()
+        )
 
     def _format_count_info(self, trial: models.Trial, count: int) -> str:
         """Formats a trial's count and information for logging."""
-        return (f'Trial ID: {trial.id}. '
-                f'Benchmark-Fuzzer pair: {trial.benchmark}-{trial.fuzzer}. '
-                f'Accumulating to {count/self.num_trials*100:3.2f}% '
-                f'({count} / {self.num_trials}) of all trials.')
+        return (
+            f"Trial ID: {trial.id}. "
+            f"Benchmark-Fuzzer pair: {trial.benchmark}-{trial.fuzzer}. "
+            f"Accumulating to {count/self.num_trials*100:3.2f}% "
+            f"({count} / {self.num_trials}) of all trials."
+        )
 
-    def _log_restart(self, preemptible: bool, trial: models.Trial,
-                     count: int) -> None:
+    def _log_restart(self, preemptible: bool, trial: models.Trial, count: int) -> None:
         """Logs the count of restarting trials."""
-        logs.info('Restarting a preemptible trial as a %s one: %s',
-                  'preemptible' if preemptible else 'nonpreemptible',
-                  self._format_count_info(trial, count))
+        logs.info(
+            "Restarting a preemptible trial as a %s one: %s",
+            "preemptible" if preemptible else "nonpreemptible",
+            self._format_count_info(trial, count),
+        )
 
-    def _get_preempted_replacements(self,
-                                    preempted_trials) -> List[models.Trial]:
+    def _get_preempted_replacements(self, preempted_trials) -> List[models.Trial]:
         """Returns a list containing a replacement trial for each trial that can
         be replaced in |preempted_trials|."""
         replacements = []
@@ -385,24 +417,25 @@ class TrialInstanceManager:  # pylint: disable=too-many-instance-attributes
 
             self.num_preemptible_omits += 1
             logs.warning(
-                'Omitting a trial to cap cost: %s',
-                self._format_count_info(trial, self.num_preemptible_omits))
+                "Omitting a trial to cap cost: %s",
+                self._format_count_info(trial, self.num_preemptible_omits),
+            )
 
         return replacements
 
     def _get_started_unfinished_instances(self) -> Dict[str, models.Trial]:
         """Returns a dictionary of instance names to trials for trials were
         started but not finished according to the database."""
-        experiment = self.experiment_config['experiment']
+        experiment = self.experiment_config["experiment"]
         running_trials = get_running_trials(experiment)
         return {
-            experiment_utils.get_trial_instance_name(experiment, trial.id):
-            trial for trial in running_trials
+            experiment_utils.get_trial_instance_name(experiment, trial.id): trial
+            for trial in running_trials
         }
 
     def get_preempted_trials(self) -> List[models.Trial]:
         """Returns a list of trials that were preempted."""
-        if not self.experiment_config.get('preemptible_runners'):
+        if not self.experiment_config.get("preemptible_runners"):
             # No preempted trials in a nonpreemptible experiment.
             assert not self.preempted_trials
             return []
@@ -416,8 +449,7 @@ class TrialInstanceManager:  # pylint: disable=too-many-instance-attributes
             trial = started_instances.get(instance)
             if trial is None:
                 # Preemption for this trial was probably handled already.
-                logs.warning('Instance: %s is preempted but is not running.',
-                             instance)
+                logs.warning("Instance: %s is preempted but is not running.", instance)
                 continue
             if trial.id in self.preempted_trials:
                 # We already know this instance was preempted.
@@ -435,12 +467,15 @@ class TrialInstanceManager:  # pylint: disable=too-many-instance-attributes
         # those we discovered in the query.
         return trials
 
-    @retry.wrap(NUM_RETRIES, RETRY_WAIT_SECONDS,
-                'experiment.scheduler.TrialInstanceManager.'
-                '_get_preempted_instances_with_retries')
+    @retry.wrap(
+        NUM_RETRIES,
+        RETRY_WAIT_SECONDS,
+        "experiment.scheduler.TrialInstanceManager."
+        "_get_preempted_instances_with_retries",
+    )
     def _get_preempted_instances_with_retries(self):
-        project = self.experiment_config['cloud_project']
-        zone = self.experiment_config['cloud_compute_zone']
+        project = self.experiment_config["cloud_project"]
+        zone = self.experiment_config["cloud_compute_zone"]
         return list(gce.get_preempted_instances(project, zone))
 
     def handle_preempted_trials(self):
@@ -515,39 +550,41 @@ class TrialInstanceManager:  # pylint: disable=too-many-instance-attributes
         be complete if the preemption rate is pathologically high. This is
         acceptable because a human should intervene in these edge cases.
         """
-        logger.info('Handling preempted.')
-        if not self.experiment_config.get('preemptible_runners'):
+        logger.info("Handling preempted.")
+        if not self.experiment_config.get("preemptible_runners"):
             # Nothing to do here if not a preemptible experiment.
             return []
 
         preempted_trials = self.get_preempted_trials()
         if not preempted_trials:
-            logs.info('No preempteds to handle.')
+            logs.info("No preempteds to handle.")
             return []
 
         replacements = self._get_preempted_replacements(preempted_trials)
-        experiment = self.experiment_config['experiment']
+        experiment = self.experiment_config["experiment"]
         instances = [
             experiment_utils.get_trial_instance_name(experiment, trial.id)
             for trial in preempted_trials
         ]
 
-        logs.info('Deleting preempted instances: %s', instances)
+        logs.info("Deleting preempted instances: %s", instances)
         if not delete_instances(instances, self.experiment_config):
-            logs.error('Could not delete preempted instances: %s', instances)
+            logs.error("Could not delete preempted instances: %s", instances)
 
         db_utils.add_all(preempted_trials + replacements)
-        logger.info('Done handling preempted.')
+        logger.info("Done handling preempted.")
         return replacements
 
 
 def replace_trial(trial, preemptible):
     """Returns a new trial to replace |trial|. The trial is preemptible if
     |preemptible|. Sets trial.replacement to the replacement trial."""
-    replacement = models.Trial(fuzzer=trial.fuzzer,
-                               benchmark=trial.benchmark,
-                               experiment=trial.experiment,
-                               preemptible=preemptible)
+    replacement = models.Trial(
+        fuzzer=trial.fuzzer,
+        benchmark=trial.benchmark,
+        experiment=trial.experiment,
+        preemptible=preemptible,
+    )
     trial.replacement = replacement.id
     return replacement
 
@@ -555,15 +592,16 @@ def replace_trial(trial, preemptible):
 def schedule(experiment_config: dict, pool, core_allocation=None):
     """Gets all pending trials for the current experiment and then schedules
     those that are possible."""
-    logger.info('Finding trials to schedule.')
+    logger.info("Finding trials to schedule.")
 
     # End expired trials
     end_expired_trials(experiment_config, core_allocation)
 
     # Start pending trials.
-    pending_trials = list(get_pending_trials(experiment_config['experiment']))
-    started_trials = start_trials(pending_trials, experiment_config, pool,
-                                  core_allocation)
+    pending_trials = list(get_pending_trials(experiment_config["experiment"]))
+    started_trials = start_trials(
+        pending_trials, experiment_config, pool, core_allocation
+    )
     return started_trials
 
 
@@ -574,40 +612,41 @@ def schedule_loop(experiment_config: dict):
     will use fork to create the Pool which breaks logging."""
     # Create the thread pool once and reuse it to avoid leaking threads and
     # other issues.
-    logger.info('Starting scheduler.')
-    num_trials = len(
-        get_experiment_trials(experiment_config['experiment']).all())
+    logger.info("Starting scheduler.")
+    num_trials = len(get_experiment_trials(experiment_config["experiment"]).all())
     local_experiment = experiment_utils.is_local_experiment()
     pool_args = ()
     core_allocation = None
-    runners_cpus = experiment_config['runners_cpus']
+    runners_cpus = experiment_config["runners_cpus"]
     if runners_cpus is not None:
         if local_experiment:
-            runner_num_cpu_cores = experiment_config['runner_num_cpu_cores']
+            runner_num_cpu_cores = experiment_config["runner_num_cpu_cores"]
             processes = runners_cpus // runner_num_cpu_cores
-            logger.info('Scheduling runners from core 0 to %d.',
-                        runner_num_cpu_cores * processes - 1)
+            logger.info(
+                "Scheduling runners from core 0 to %d.",
+                runner_num_cpu_cores * processes - 1,
+            )
             core_allocation = {}
-            for cpu in range(0, runner_num_cpu_cores * processes,
-                             runner_num_cpu_cores):
-                core_allocation[
-                    f'{cpu}-{cpu + runner_num_cpu_cores - 1}'] = None
+            for cpu in range(0, runner_num_cpu_cores * processes, runner_num_cpu_cores):
+                core_allocation[f"{cpu}-{cpu + runner_num_cpu_cores - 1}"] = None
             pool_args = (processes,)
         else:
             pool_args = (runners_cpus,)
 
     if not local_experiment:
         gce.initialize()
-        trial_instance_manager = TrialInstanceManager(num_trials,
-                                                      experiment_config)
+        trial_instance_manager = TrialInstanceManager(num_trials, experiment_config)
 
-    experiment = experiment_config['experiment']
+    experiment = experiment_config["experiment"]
     with multiprocessing.Pool(*pool_args) as pool:
         handle_preempted = False
         while not all_trials_ended(experiment):
             try:
-                if (not local_experiment and not handle_preempted and
-                        not any_pending_trials(experiment)):
+                if (
+                    not local_experiment
+                    and not handle_preempted
+                    and not any_pending_trials(experiment)
+                ):
                     # This ensures that:
                     # 1. handle_preempted will not becomes True when running
                     #    locally.
@@ -619,7 +658,7 @@ def schedule_loop(experiment_config: dict):
                 if handle_preempted:
                     trial_instance_manager.handle_preempted_trials()
             except Exception:  # pylint: disable=broad-except
-                logger.error('Error occurred during scheduling.')
+                logger.error("Error occurred during scheduling.")
 
             # Either
             # - We had an unexpected exception OR
@@ -628,7 +667,7 @@ def schedule_loop(experiment_config: dict):
             # In these cases, sleep before retrying again.
             time.sleep(FAIL_WAIT_SECONDS)
 
-    logger.info('Finished scheduling.')
+    logger.info("Finished scheduling.")
 
 
 def update_started_trials(trial_proxies, trial_id_mapping, core_allocation):
@@ -655,7 +694,8 @@ def update_started_trials(trial_proxies, trial_id_mapping, core_allocation):
 def start_trials(trials, experiment_config: dict, pool, core_allocation=None):
     """Start all |trials| that are possible to start. Marks the ones that were
     started as started."""
-    logger.info('Starting trials.')
+    logger.info("Starting trials.")
+    print("experiment_config::", experiment_config)
     trial_id_mapping = {trial.id: trial for trial in trials}
 
     # Shuffle trials so that we don't create trials for the same fuzzer
@@ -667,10 +707,11 @@ def start_trials(trials, experiment_config: dict, pool, core_allocation=None):
     shuffled_trials = list(trial_id_mapping.values())
     random.shuffle(shuffled_trials)
 
-    free_cpusets = [
-        cpuset for cpuset, trial_id in core_allocation.items()
-        if trial_id is None
-    ] if core_allocation is not None else None
+    free_cpusets = (
+        [cpuset for cpuset, trial_id in core_allocation.items() if trial_id is None]
+        if core_allocation is not None
+        else None
+    )
 
     start_trial_args = []
     for index, trial in enumerate(shuffled_trials):
@@ -678,14 +719,18 @@ def start_trials(trials, experiment_config: dict, pool, core_allocation=None):
             break
 
         start_trial_args += [
-            (TrialProxy(trial), experiment_config,
-             free_cpusets[index] if free_cpusets is not None else None)
+            (
+                TrialProxy(trial),
+                experiment_config,
+                free_cpusets[index] if free_cpusets is not None else None,
+            )
         ]
 
     started_trial_proxies = pool.starmap(_start_trial, start_trial_args)
-    started_trials = update_started_trials(started_trial_proxies,
-                                           trial_id_mapping, core_allocation)
-    logger.info(f'Started {len(started_trials)} trials.')
+    started_trials = update_started_trials(
+        started_trial_proxies, trial_id_mapping, core_allocation
+    )
+    logger.info(f"Started {len(started_trials)} trials.")
     return started_trials
 
 
@@ -707,10 +752,11 @@ def _initialize_logs(experiment):
     """Initialize logs. This must be called on process start."""
     logs.initialize(
         default_extras={
-            'experiment': experiment,
-            'component': 'dispatcher',
-            'subcomponent': 'scheduler'
-        })
+            "experiment": experiment,
+            "component": "dispatcher",
+            "subcomponent": "scheduler",
+        }
+    )
 
 
 # Restarting preemptibles gives us another 24h (upto). It resets the counter.
@@ -725,99 +771,109 @@ def _start_trial(trial: TrialProxy, experiment_config: dict, cpuset=None):
     # Also, support batched saves of trials (with a queue, like measurer uses)
     # so that measuring a schedule doesn't require waiting until the map call
     # that calls this function completely terminates.
-    _initialize_logs(experiment_config['experiment'])
-    logger.info('Start trial %d.', trial.id)
-    started = create_trial_instance(trial.fuzzer, trial.benchmark, trial.id,
-                                    experiment_config, trial.preemptible,
-                                    cpuset)
+    _initialize_logs(experiment_config["experiment"])
+    logger.info("Start trial %d.", trial.id)
+    started = create_trial_instance(
+        trial.fuzzer,
+        trial.benchmark,
+        trial.id,
+        experiment_config,
+        trial.preemptible,
+        cpuset,
+    )
     if started:
         trial.time_started = datetime_now()
         trial.cpuset = cpuset
         return trial
-    logger.info('Trial: %d not started.', trial.id)
+    logger.info("Trial: %d not started.", trial.id)
     return None
 
 
 def render_startup_script_template(  # pylint: disable=too-many-arguments
-        instance_name: str,
-        fuzzer: str,
-        benchmark: str,
-        trial_id: int,
-        experiment_config: dict,
-        cpuset=None):
+    instance_name: str,
+    fuzzer: str,
+    benchmark: str,
+    trial_id: int,
+    experiment_config: dict,
+    cpuset=None,
+):
     """Render the startup script using the template and the parameters
     provided and return the result."""
-    experiment = experiment_config['experiment']
+    experiment = experiment_config["experiment"]
     docker_image_url = benchmark_utils.get_runner_image_url(
-        experiment, benchmark, fuzzer, experiment_config['docker_registry'])
+        experiment, benchmark, fuzzer, experiment_config["docker_registry"]
+    )
     fuzz_target = benchmark_utils.get_fuzz_target(benchmark)
 
     local_experiment = experiment_utils.is_local_experiment()
-    template = JINJA_ENV.get_template('runner-startup-script-template.sh')
+    template = JINJA_ENV.get_template("runner-startup-script-template.sh")
     kwargs = {
-        'instance_name': instance_name,
-        'benchmark': benchmark,
-        'experiment': experiment,
-        'fuzzer': fuzzer,
-        'trial_id': trial_id,
-        'max_total_time': experiment_config['max_total_time'],
-        'snapshot_period': experiment_config['snapshot_period'],
-        'experiment_filestore': experiment_config['experiment_filestore'],
-        'report_filestore': experiment_config['report_filestore'],
-        'fuzz_target': fuzz_target,
-        'docker_image_url': docker_image_url,
-        'docker_registry': experiment_config['docker_registry'],
-        'local_experiment': local_experiment,
-        'no_seeds': experiment_config['no_seeds'],
-        'no_dictionaries': experiment_config['no_dictionaries'],
-        'oss_fuzz_corpus': experiment_config['oss_fuzz_corpus'],
-        'num_cpu_cores': experiment_config['runner_num_cpu_cores'],
-        'private': experiment_config['private'],
-        'cpuset': cpuset,
-        'custom_seed_corpus_dir': experiment_config['custom_seed_corpus_dir'],
+        "instance_name": instance_name,
+        "benchmark": benchmark,
+        "experiment": experiment,
+        "fuzzer": fuzzer,
+        "trial_id": trial_id,
+        "max_total_time": experiment_config["max_total_time"],
+        "snapshot_period": experiment_config["snapshot_period"],
+        "experiment_filestore": experiment_config["experiment_filestore"],
+        "report_filestore": experiment_config["report_filestore"],
+        "fuzz_target": fuzz_target,
+        "docker_image_url": docker_image_url,
+        "docker_registry": experiment_config["docker_registry"],
+        "local_experiment": local_experiment,
+        "no_seeds": experiment_config["no_seeds"],
+        "no_dictionaries": experiment_config["no_dictionaries"],
+        "oss_fuzz_corpus": experiment_config["oss_fuzz_corpus"],
+        "num_cpu_cores": experiment_config["runner_num_cpu_cores"],
+        "private": experiment_config["private"],
+        "cpuset": cpuset,
+        "custom_seed_corpus_dir": experiment_config["custom_seed_corpus_dir"],
     }
 
     if not local_experiment:
-        kwargs['cloud_compute_zone'] = experiment_config['cloud_compute_zone']
-        kwargs['cloud_project'] = experiment_config['cloud_project']
+        kwargs["cloud_compute_zone"] = experiment_config["cloud_compute_zone"]
+        kwargs["cloud_project"] = experiment_config["cloud_project"]
 
     return template.render(**kwargs)
 
 
 def create_trial_instance(  # pylint: disable=too-many-arguments
-        fuzzer: str,
-        benchmark: str,
-        trial_id: int,
-        experiment_config: dict,
-        preemptible: bool,
-        cpuset=None) -> bool:
+    fuzzer: str,
+    benchmark: str,
+    trial_id: int,
+    experiment_config: dict,
+    preemptible: bool,
+    cpuset=None,
+) -> bool:
     """Create or start a trial instance for a specific
     trial_id,fuzzer,benchmark."""
     instance_name = experiment_utils.get_trial_instance_name(
-        experiment_config['experiment'], trial_id)
-    startup_script = render_startup_script_template(instance_name, fuzzer,
-                                                    benchmark, trial_id,
-                                                    experiment_config, cpuset)
-    startup_script_path = f'/tmp/{instance_name}-start-docker.sh'
-    with open(startup_script_path, 'w', encoding='utf-8') as file_handle:
+        experiment_config["experiment"], trial_id
+    )
+    startup_script = render_startup_script_template(
+        instance_name, fuzzer, benchmark, trial_id, experiment_config, cpuset
+    )
+    startup_script_path = f"/tmp/{instance_name}-start-docker.sh"
+    with open(startup_script_path, "w", encoding="utf-8") as file_handle:
         file_handle.write(startup_script)
 
-    return gcloud.create_instance(instance_name,
-                                  gcloud.InstanceType.RUNNER,
-                                  experiment_config,
-                                  startup_script=startup_script_path,
-                                  preemptible=preemptible)
+    return gcloud.create_instance(
+        instance_name,
+        gcloud.InstanceType.RUNNER,
+        experiment_config,
+        startup_script=startup_script_path,
+        preemptible=preemptible,
+    )
 
 
 def main():
     """Main function for running scheduler independently."""
-    logs.initialize(default_extras={
-        'component': 'dispatcher',
-        'subcomponent': 'scheduler'
-    })
+    logs.initialize(
+        default_extras={"component": "dispatcher", "subcomponent": "scheduler"}
+    )
 
     if len(sys.argv) != 2:
-        print(f'Usage: {sys.argv[0]} <experiment_config.yaml>')
+        print(f"Usage: {sys.argv[0]} <experiment_config.yaml>")
         return 1
 
     experiment_config = yaml_utils.read(sys.argv[1])
@@ -826,5 +882,5 @@ def main():
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

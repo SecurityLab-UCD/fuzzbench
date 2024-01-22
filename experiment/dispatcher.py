@@ -44,41 +44,51 @@ LOOP_WAIT_SECONDS = 5 * 60
 def _get_config_file_path():
     """Return config file path."""
     return exp_path.path(
-        experiment_utils.get_internal_experiment_config_relative_path())
+        experiment_utils.get_internal_experiment_config_relative_path()
+    )
 
 
 def create_work_subdirs(subdirs: List[str]):
     """Create |subdirs| in work directory."""
     for subdir in subdirs:
         os.mkdir(os.path.join(experiment_utils.get_work_dir(), subdir))
+        print("create:: ", os.path.join(experiment_utils.get_work_dir(), subdir))
 
 
 def _initialize_experiment_in_db(experiment_config: dict):
     """Initializes |experiment| in the database by creating the experiment
     entity."""
     with db_utils.session_scope() as session:
-        experiment_exists = (session.query(models.Experiment).filter(
-            models.Experiment.name == experiment_config["experiment"]).first())
+        experiment_exists = (
+            session.query(models.Experiment)
+            .filter(models.Experiment.name == experiment_config["experiment"])
+            .first()
+        )
     if experiment_exists:
         raise Exception("Experiment already exists in database.")
 
-    db_utils.add_all([
-        db_utils.get_or_create(
-            models.Experiment,
-            name=experiment_config["experiment"],
-            git_hash=experiment_config["git_hash"],
-            private=experiment_config.get("private", True),
-            experiment_filestore=experiment_config["experiment_filestore"],
-            description=experiment_config["description"],
-        ),
-    ])
+    db_utils.add_all(
+        [
+            db_utils.get_or_create(
+                models.Experiment,
+                name=experiment_config["experiment"],
+                git_hash=experiment_config["git_hash"],
+                private=experiment_config.get("private", True),
+                experiment_filestore=experiment_config["experiment_filestore"],
+                description=experiment_config["description"],
+            ),
+        ]
+    )
 
 
 def _record_experiment_time_ended(experiment_name: str):
     """Record |experiment| end time in the database."""
     with db_utils.session_scope() as session:
-        experiment = (session.query(models.Experiment).filter(
-            models.Experiment.name == experiment_name).one())
+        experiment = (
+            session.query(models.Experiment)
+            .filter(models.Experiment.name == experiment_name)
+            .one()
+        )
     experiment.time_ended = datetime.datetime.utcnow()
     db_utils.add_all([experiment])
 
@@ -104,9 +114,9 @@ class Experiment:
         self.preemptible = self.config.get("preemptible_runners")
 
 
-def build_images_for_trials(fuzzers: List[str], benchmarks: List[str],
-                            num_trials: int,
-                            preemptible: bool) -> List[models.Trial]:
+def build_images_for_trials(
+    fuzzers: List[str], benchmarks: List[str], num_trials: int, preemptible: bool
+) -> List[models.Trial]:
     """Builds the images needed to run |experiment| and returns a list of trials
     that can be run for experiment. This is the number of trials specified in
     experiment times each pair of fuzzer+benchmark that builds successfully."""
@@ -126,7 +136,8 @@ def build_images_for_trials(fuzzers: List[str], benchmarks: List[str],
                 experiment=experiment_name,
                 benchmark=benchmark,
                 preemptible=preemptible,
-            ) for _ in range(num_trials)
+            )
+            for _ in range(num_trials)
         ]
         trials.extend(fuzzer_benchmark_trials)
     return trials
@@ -159,12 +170,14 @@ def dispatcher_main():
     create_work_subdirs(["experiment-folders", "measurement-folders"])
 
     # Start measurer and scheduler in seperate threads/processes.
-    scheduler_loop_thread = threading.Thread(target=scheduler.schedule_loop,
-                                             args=(experiment.config,))
+    scheduler_loop_thread = threading.Thread(
+        target=scheduler.schedule_loop, args=(experiment.config,)
+    )
     scheduler_loop_thread.start()
 
     measurer_main_process = multiprocessing.Process(
-        target=measure_manager.measure_main, args=(experiment.config,))
+        target=measure_manager.measure_main, args=(experiment.config,)
+    )
 
     measurer_main_process.start()
 
@@ -180,9 +193,9 @@ def dispatcher_main():
             is_complete = not measurer_main_process.is_alive()
 
         # Generate periodic output reports.
-        reporter.output_report(experiment.config,
-                               in_progress=not is_complete,
-                               coverage_report=is_complete)
+        reporter.output_report(
+            experiment.config, in_progress=not is_complete, coverage_report=is_complete
+        )
 
         if is_complete:
             # Experiment is complete, bail out.
@@ -197,9 +210,11 @@ def dispatcher_main():
 
 def main():
     """Do the experiment and report results."""
-    logs.initialize(default_extras={
-        "component": "dispatcher",
-    })
+    logs.initialize(
+        default_extras={
+            "component": "dispatcher",
+        }
+    )
 
     try:
         dispatcher_main()
@@ -212,8 +227,9 @@ def main():
 
     experiment_config_file_path = _get_config_file_path()
 
-    if stop_experiment.stop_experiment(experiment_utils.get_experiment_name(),
-                                       experiment_config_file_path):
+    if stop_experiment.stop_experiment(
+        experiment_utils.get_experiment_name(), experiment_config_file_path
+    ):
         return 0
 
     return 1
