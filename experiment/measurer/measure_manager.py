@@ -63,6 +63,7 @@ SNAPSHOTS_BATCH_SAVE_SIZE = 100
 
 def exists_in_experiment_filestore(path: pathlib.Path) -> bool:
     """Returns True if |path| exists in the experiment_filestore."""
+    print(filestore_utils.ls(exp_path.filestore(path), must_exist=False))
     return filestore_utils.ls(exp_path.filestore(path), must_exist=False).retcode == 0
 
 
