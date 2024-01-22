@@ -175,7 +175,10 @@ def measure_all_trials(
 
     experiment_folders_dir = experiment_utils.get_experiment_folders_dir()
     if not exists_in_experiment_filestore(experiment_folders_dir):
-        print("measure_all_trials exit in exists_in_experiment_filestore")
+        print(
+            "measure_all_trials exit in exists_in_experiment_filestore",
+            experiment_folders_dir,
+        )
         return True
 
     max_cycle = _time_to_cycle(max_total_time)
