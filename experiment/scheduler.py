@@ -656,7 +656,6 @@ def start_trials(trials, experiment_config: dict, pool, core_allocation=None):
     """Start all |trials| that are possible to start. Marks the ones that were
     started as started."""
     logger.info('Starting trials.')
-    print("experiment_config::", experiment_config)
     trial_id_mapping = {trial.id: trial for trial in trials}
 
     # Shuffle trials so that we don't create trials for the same fuzzer

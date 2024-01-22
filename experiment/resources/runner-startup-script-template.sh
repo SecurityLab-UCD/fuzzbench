@@ -35,9 +35,9 @@ do
 done{% endif %}
 
 docker run \
+--gpus all \
 --privileged --cpus={{num_cpu_cores}} --rm \
 {% if cpuset %}--cpuset-cpus={{cpuset}} {% endif %}\
---gpus all \
 -e INSTANCE_NAME={{instance_name}} \
 -e FUZZER={{fuzzer}} \
 -e BENCHMARK={{benchmark}} \
