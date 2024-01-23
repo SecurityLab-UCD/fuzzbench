@@ -539,7 +539,7 @@ class LocalDispatcher(BaseDispatcher):
             '-c',
             'rsync -r '
             '"${EXPERIMENT_FILESTORE}/${EXPERIMENT}/input/" ${WORK} && '
-            'mkdir ${WORK}/src && '
+            'mkdir -p ${WORK}/src && '
             'tar -xvzf ${WORK}/src.tar.gz -C ${WORK}/src && '
             'PYTHONPATH=${WORK}/src python3 '
             '${WORK}/src/experiment/dispatcher.py || '
