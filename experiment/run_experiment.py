@@ -489,7 +489,7 @@ class LocalDispatcher(BaseDispatcher):
         set_report_filestore_arg = f'REPORT_FILESTORE={filestore}'
         set_snapshot_period_arg = (
             f'SNAPSHOT_PERIOD={self.config["snapshot_period"]}')
-        docker_image_url = 'hxxzhang/repo'#f'{docker_registry}/dispatcher-image'
+        docker_image_url = 'hxxzhang/dispatcher'#f'{docker_registry}/dispatcher-image'
         set_concurrent_builds_arg = (
             f'CONCURRENT_BUILDS={self.config["concurrent_builds"]}')
         set_worker_pool_name_arg = (
