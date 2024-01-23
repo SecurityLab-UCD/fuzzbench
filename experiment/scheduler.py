@@ -730,6 +730,7 @@ def _start_trial(trial: TrialProxy, experiment_config: dict, cpuset=None):
     started = create_trial_instance(trial.fuzzer, trial.benchmark, trial.id,
                                     experiment_config, trial.preemptible,
                                     cpuset)
+    print(trial)
     if started:
         trial.time_started = datetime_now()
         trial.cpuset = cpuset
