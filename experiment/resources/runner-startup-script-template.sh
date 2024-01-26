@@ -38,6 +38,8 @@ docker run \
 --gpus all \
 --privileged --cpus={{num_cpu_cores}} --rm \
 {% if cpuset %}--cpuset-cpus={{cpuset}} {% endif %}\
+-e CUDA_CACHE_MAXSIZE=2147483647 \
+-e CUDA_CACHE_DISABLE=0 \
 -e INSTANCE_NAME={{instance_name}} \
 -e FUZZER={{fuzzer}} \
 -e BENCHMARK={{benchmark}} \
