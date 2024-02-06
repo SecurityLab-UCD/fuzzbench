@@ -242,12 +242,13 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
 def accelerate_run():
     """Run a subprocess to run accelerate script."""
     os.system(
-        "accelerate launch --mixed_precision fp16 structureLLM/ppo_llama2_mutator.py")
+        "python3 structureLLM/mock_mutator.py")
+        # "accelerate launch --mixed_precision fp16 structureLLM/ppo_llama2_mutator.py")
 
 
 def afl_fuzzer_run(input_corpus, output_corpus, target_binary, flags):
     """Run a subprocess to run fuzzer."""
-    time.sleep(500)
+    time.sleep(1)
     print("Start run afl_fuzzer")
     afl_fuzzer.run_afl_fuzz(input_corpus,
                             output_corpus,
