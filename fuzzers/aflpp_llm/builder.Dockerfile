@@ -29,7 +29,7 @@ RUN git clone https://github.com/SecurityLab-UCD/AFLplusplus.git /afl && \
     true
 
 RUN git clone https://github.com/SecurityLab-UCD/structureLLM.git /afl/structureLLM && \
-    git checkout f4e9137380bf01caae33ad457dab1f12d192b60e  || \
+    git checkout d15a0781424c6013df1a8045d0f67610fdf7bf7e  || \
     true
 
 # Build without Python support as we don't need it.
