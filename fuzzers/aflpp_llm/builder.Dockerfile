@@ -25,7 +25,7 @@ RUN apt-get update && \
 # Clone your fuzzers sources.
 RUN git clone https://github.com/SecurityLab-UCD/AFLplusplus.git /afl && \
     cd /afl && \
-    git checkout 28e8b602327563812aaebf2b09cc47f7c227ba0e || \
+    git checkout a2861e69ac25b38f9293f47787e8b9bce75e7527 || \
     true
 
 RUN git clone https://github.com/SecurityLab-UCD/structureLLM.git /afl/structureLLM && \
