@@ -16,6 +16,7 @@
 
 import os
 import shutil
+import multiprocessing
 
 from fuzzers.afl import fuzzer as afl_fuzzer
 from fuzzers import utils
@@ -235,6 +236,13 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
                     build_directory)
 
 
+def afl_fuzzer_run(input_corpus, output_corpus, target_binary, flags):
+    """Run a subprocess to run fuzzer."""
+    print("Start run afl_fuzzer")
+    afl_fuzzer.run_afl_fuzz(input_corpus,
+                            output_corpus,
+                            target_binary,
+                            additional_flags=flags)
 
 # pylint: disable=too-many-arguments
 def fuzz(
@@ -282,7 +290,11 @@ def fuzz(
         if "ADDITIONAL_ARGS" in os.environ:
             flags += os.environ["ADDITIONAL_ARGS"].split(" ")
 
-    afl_fuzzer.run_afl_fuzz(input_corpus,
-                            output_corpus,
-                            target_binary,
-                            additional_flags=flags)
+    afl_p = multiprocessing.Process(target=afl_fuzzer_run,
+                                    args=(input_corpus, output_corpus,
+                                          target_binary, flags))
+
+    afl_p.start()
+
+    # Wait for both processes to finish
+    afl_p.join()
