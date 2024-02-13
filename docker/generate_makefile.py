@@ -57,7 +57,7 @@ def _get_makefile_run_template(image):
 
         section += f'\
 \tdocker run \\\n\
-\t--cpus=1 \\\n\
+\t--cpus=5 \\\n\
 \t--gpus all \\\n\
 \t--shm-size=2g \\\n\
 \t--cap-add SYS_NICE \\\n\
