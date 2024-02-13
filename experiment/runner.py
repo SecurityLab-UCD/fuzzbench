@@ -196,8 +196,6 @@ def run_fuzzer(max_total_time, log_filename):
 
         # Write output to stdout if user is fuzzing from command line.
         # Otherwise, write output to the log file.
-        print("COMMAND::: ",command)
-        print("log_filename:::",log_filename)
         if environment.get('FUZZ_OUTSIDE_EXPERIMENT'):
             new_process.execute(command,
                                 timeout=max_total_time,

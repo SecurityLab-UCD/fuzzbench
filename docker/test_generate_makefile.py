@@ -83,6 +83,7 @@ def test_get_rules_for_runner_image():
         'debug-afl-zlib: .afl-zlib-runner\n' + ('\
 \tdocker run \\\n\
 \t--cpus=1 \\\n\
+\t--gpus all \\\n\
 \t--shm-size=2g \\\n\
 \t--cap-add SYS_NICE \\\n\
 \t--cap-add SYS_PTRACE \\\n\

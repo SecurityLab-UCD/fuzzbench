@@ -107,8 +107,11 @@ do
 done
 
 docker run \\
+--gpus all \\
 --privileged --cpus=1 --rm \\
 \\
+-e CUDA_CACHE_MAXSIZE=2147483647 \\
+-e CUDA_CACHE_DISABLE=0 \\
 -e INSTANCE_NAME=r-test-experiment-9 \\
 -e FUZZER=fuzzer-a \\
 -e BENCHMARK={benchmark} \\
