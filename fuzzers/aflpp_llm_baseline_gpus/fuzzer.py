@@ -232,8 +232,8 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
     if os.path.exists("/get_frida_entry.sh"):
         shutil.copy("/afl/afl-frida-trace.so", build_directory)
         shutil.copy("/get_frida_entry.sh", build_directory)
-    if os.path.exists("/afl/custom_mutators/aflpp/aflpp-mutator.so"):
-        shutil.copy("/afl/custom_mutators/aflpp/aflpp-mutator.so",
+    if os.path.exists("/afl/custom_mutators/aflpp_llm_baseline/aflpp-mutator.so"):
+        shutil.copy("/afl/custom_mutators/aflpp_llm_baseline/aflpp-mutator.so",
                     build_directory)
     if os.path.exists("/afl/structureLLM"):
         shutil.copytree("/afl/structureLLM", build_directory + "/structureLLM/")

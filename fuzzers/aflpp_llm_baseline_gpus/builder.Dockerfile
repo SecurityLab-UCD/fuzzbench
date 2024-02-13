@@ -25,7 +25,7 @@ RUN apt-get update && \
 # Clone your fuzzers sources.
 RUN git clone https://github.com/SecurityLab-UCD/AFLplusplus.git /afl && \
     cd /afl && \
-    git checkout 56d79723e21edea8e6e2ed939f342e0bff0daeb7 || \
+    git checkout 835f1a2dbee0ed65ee6a813f1e11e190d44fcc8b || \
     true
 
 RUN git clone https://github.com/SecurityLab-UCD/structureLLM.git /afl/structureLLM && \
@@ -40,4 +40,4 @@ RUN cd /afl && \
     PYTHON_INCLUDE=/ make && \
     cp utils/aflpp_driver/libAFLDriver.a /
 
-RUN cd /afl/custom_mutators/aflpp && make
+RUN cd /afl/custom_mutators/aflpp_llm_baseline && make
