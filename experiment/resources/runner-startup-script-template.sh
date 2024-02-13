@@ -36,7 +36,7 @@ done{% endif %}
 
 docker run \
 --gpus all \
---privileged --cpus=16 --rm \
+--privileged --cpus=60 --rm \
 {% if cpuset %}--cpuset-cpus={{cpuset}} {% endif %}\
 -e CUDA_CACHE_MAXSIZE=2147483647 \
 -e CUDA_CACHE_DISABLE=0 \
