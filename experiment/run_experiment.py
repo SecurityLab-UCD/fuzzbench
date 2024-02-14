@@ -344,7 +344,7 @@ def start_experiment(  # pylint: disable=too-many-arguments
     if config['custom_seed_corpus_dir']:
         validate_custom_seed_corpus(config['custom_seed_corpus_dir'],
                                     benchmarks)
-
+    print("runner_num_cpu_cores, runner_memory:::",config['runner_num_cpu_cores'],config['runner_memory'])
     return start_experiment_from_full_config(config)
 
 
