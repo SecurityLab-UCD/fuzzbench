@@ -36,7 +36,7 @@ done{% endif %}
 
 docker run \
 --gpus all \
---privileged --cpus=60 --rm \
+--privileged --cpus=18 --rm \
 {% if cpuset %}--cpuset-cpus={{cpuset}} {% endif %}\
 -e CUDA_CACHE_MAXSIZE=2147483647 \
 -e CUDA_CACHE_DISABLE=0 \
@@ -58,7 +58,7 @@ docker run \
 -e PRIVATE={{private}} \
 -e LOCAL_EXPERIMENT={{local_experiment}} \
 {% if not local_experiment %}--name=runner-container {% endif %}\
---shm-size=2g \
+--shm-size=32g \
 --cap-add SYS_NICE --cap-add SYS_PTRACE \
 --security-opt seccomp=unconfined \
 {{docker_image_url}} 2>&1 | tee /tmp/runner-log-{{trial_id}}.txt

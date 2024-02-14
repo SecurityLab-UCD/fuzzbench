@@ -244,6 +244,16 @@ def accelerate_run():
     os.system(
         "accelerate launch --mixed_precision fp16 structureLLM/ppo_llama2_bloaty_mutator.py")
 
+
+def afl_fuzzer_run(input_corpus, output_corpus, target_binary, flags):
+    """Run a subprocess to run fuzzer."""
+    time.sleep(600)
+    afl_fuzzer.run_afl_fuzz(input_corpus,
+                            output_corpus,
+                            target_binary,
+                            additional_flags=flags)
+
+
 # pylint: disable=too-many-arguments
 def fuzz(
     input_corpus,
@@ -291,12 +301,13 @@ def fuzz(
             flags += os.environ["ADDITIONAL_ARGS"].split(" ")
 
     acc_p = multiprocessing.Process(target=accelerate_run)
+    afl_p = multiprocessing.Process(target=afl_fuzzer_run,
+                                    args=(input_corpus, output_corpus,
+                                          target_binary, flags))
 
     acc_p.start()
+    afl_p.start()
+
+    # Wait for both processes to finish
     acc_p.join()
-    
-    time.sleep(600)
-    afl_fuzzer.run_afl_fuzz(input_corpus,
-                            output_corpus,
-                            target_binary,
-                            additional_flags=flags)
+    afl_p.join()
