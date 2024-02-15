@@ -255,7 +255,7 @@ def accelerate_run():
 
 def afl_fuzzer_run(input_corpus, output_corpus, target_binary, flags):
     """Run a subprocess to run fuzzer."""
-    time.sleep(300)
+    time.sleep(400)
     afl_fuzzer.run_afl_fuzz(input_corpus,
                             output_corpus,
                             target_binary,
@@ -298,6 +298,7 @@ def fuzz(
     os.environ["AFL_FAST_CAL"] = "1"
     os.environ["AFL_NO_WARN_INSTABILITY"] = "1"
     os.environ["AFL_NO_UI"] = "1"
+    os.environ["AFL_MAP_SIZE"] = "16777216"
     custom_mutators = "aflpp-mutator.so"
     os.environ["AFL_CUSTOM_MUTATOR_LIBRARY"] = custom_mutators
 
