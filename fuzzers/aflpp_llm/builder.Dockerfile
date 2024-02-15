@@ -26,7 +26,7 @@ RUN apt-get update && \
 
 RUN wget https://apt.llvm.org/llvm.sh
 RUN chmod +x llvm.sh
-RUN ./llvm.sh 15 all
+RUN ./llvm.sh 17 all
 
 # Clone your fuzzers sources.
 RUN git clone https://github.com/SecurityLab-UCD/AFLplusplus.git /afl && \
@@ -34,15 +34,16 @@ RUN git clone https://github.com/SecurityLab-UCD/AFLplusplus.git /afl && \
     git checkout a9bd1e18449f2c366c3939db0704b4be96e978ce || \
     true
 
-RUN git clone https://github.com/SecurityLab-UCD/structureLLM.git /afl/structureLLM && \
-    git checkout 95dc80f8db35aae42d57c6e152ad58d414a49af9  || \
-    true
-
 # Build without Python support as we don't need it.
 # Set AFL_NO_X86 to skip flaky tests.
 RUN cd /afl && \
     unset CFLAGS CXXFLAGS && \
     export CC=clang AFL_NO_X86=1 && \
-    LLVM_CONFIG=llvm-config-15 PYTHON_INCLUDE=/ make && \
+    LLVM_CONFIG=llvm-config-17 PYTHON_INCLUDE=/ make && \
+    cp utils/aflpp_driver/libAFLDriver.a /
 
 RUN cd /afl/custom_mutators/aflpp && make
+
+RUN git clone https://github.com/SecurityLab-UCD/structureLLM.git /afl/structureLLM && \
+    git checkout 131a7a595bad386e9ad2515d2adb27a82f7f2227  || \
+    true

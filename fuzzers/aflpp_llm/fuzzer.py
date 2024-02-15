@@ -66,6 +66,8 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
         os.environ["CXX"] = "/afl/afl-clang-lto++"
         edge_file = build_directory + "/aflpp_edges.txt"
         os.environ["AFL_LLVM_DOCUMENT_IDS"] = edge_file
+        os.environ["LD"] ="/afl/afl-clang-lto"
+        os.environ["DCLANG_ENABLE_OPAQUE_POINTERS"] ="ON"
         if os.path.isfile("/usr/local/bin/llvm-ranlib-13"):
             os.environ["RANLIB"] = "llvm-ranlib-13"
             os.environ["AR"] = "llvm-ar-13"
@@ -75,9 +77,9 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
             os.environ["AR"] = "llvm-ar-12"
             os.environ["AS"] = "llvm-as-12"
         else:
-            os.environ["RANLIB"] = "llvm-ranlib"
-            os.environ["AR"] = "llvm-ar"
-            os.environ["AS"] = "llvm-as"
+            os.environ["RANLIB"] = "llvm-ranlib-17"
+            os.environ["AR"] = "llvm-ar-17"
+            os.environ["AS"] = "llvm-as-17"
     elif "qemu" in build_modes:
         os.environ["CC"] = "clang"
         os.environ["CXX"] = "clang++"
