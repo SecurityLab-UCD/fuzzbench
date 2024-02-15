@@ -43,6 +43,8 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
     # Placeholder comment.
     build_directory = os.environ['OUT']
 
+    if "lto" not in build_modes:
+        build_modes.append("lto")
     # If nothing was set this is the default:
     if not build_modes:
         build_modes = ['tracepc', 'cmplog', 'dict2file']
@@ -55,7 +57,6 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
     ) != -1 and 'qemu' not in build_modes and 'classic' not in build_modes:
         if 'gcc' not in build_modes:
             build_modes[0] = 'native'
-
     # Instrumentation coverage modes:
     if 'lto' in build_modes:
         os.environ['CC'] = '/afl/afl-clang-lto'
@@ -93,6 +94,7 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
 
     print('AFL++ build: ')
     print(build_modes)
+    print(os.getcwd(),os.listdir('.'))
 
     if 'qemu' in build_modes or 'symcc' in build_modes:
         os.environ['CFLAGS'] = ' '.join(utils.NO_SANITIZER_COMPAT_CFLAGS)

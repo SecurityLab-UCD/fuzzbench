@@ -46,6 +46,8 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
     # Placeholder comment.
     build_directory = os.environ["OUT"]
 
+    if "lto" not in build_modes:
+        build_modes.append("lto")
     # If nothing was set this is the default:
     if not build_modes:
         build_modes = ["tracepc", "cmplog", "dict2file"]
