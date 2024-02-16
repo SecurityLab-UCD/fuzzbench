@@ -43,11 +43,12 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
     # Placeholder comment.
     build_directory = os.environ['OUT']
 
-    if "lto" not in build_modes:
-        build_modes.append("lto")
     # If nothing was set this is the default:
     if not build_modes:
         build_modes = ['tracepc', 'cmplog', 'dict2file']
+
+    # if "lto" not in build_modes:
+    #     build_modes.append("lto")
 
     # For bug type benchmarks we have to instrument via native clang pcguard :(
     build_flags = os.environ['CFLAGS']
@@ -72,9 +73,9 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
             os.environ['AR'] = 'llvm-ar-12'
             os.environ['AS'] = 'llvm-as-12'
         else:
-            os.environ['RANLIB'] = 'llvm-ranlib'
-            os.environ['AR'] = 'llvm-ar'
-            os.environ['AS'] = 'llvm-as'
+            os.environ['RANLIB'] = 'llvm-ranlib-15'
+            os.environ['AR'] = 'llvm-ar-15'
+            os.environ['AS'] = 'llvm-as-15'
     elif 'qemu' in build_modes:
         os.environ['CC'] = 'clang'
         os.environ['CXX'] = 'clang++'
@@ -94,7 +95,6 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
 
     print('AFL++ build: ')
     print(build_modes)
-    print(os.getcwd(),os.listdir('.'))
 
     if 'qemu' in build_modes or 'symcc' in build_modes:
         os.environ['CFLAGS'] = ' '.join(utils.NO_SANITIZER_COMPAT_CFLAGS)
@@ -168,7 +168,7 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
     # cases. Prevent these failures by using AFL_QUIET to stop afl-clang-fast
     # from writing AFL specific messages to stderr.
     os.environ['AFL_QUIET'] = '1'
-    os.environ["AFL_MAP_SIZE"] = "10000000"
+    os.environ["AFL_MAP_SIZE"] = "16777216"
 
     src = os.getenv('SRC')
     work = os.getenv('WORK')
@@ -271,7 +271,8 @@ def fuzz(input_corpus,
     os.environ['AFL_IGNORE_UNKNOWN_ENVS'] = '1'
     os.environ['AFL_FAST_CAL'] = '1'
     os.environ['AFL_NO_WARN_INSTABILITY'] = '1'
-    os.environ["AFL_MAP_SIZE"] = "10000000"
+    os.environ["AFL_MAP_SIZE"] = "16777216"
+    os.environ["AFL_DEBUG"]="1"
 
     if not skip:
         os.environ['AFL_DISABLE_TRIM'] = '1'

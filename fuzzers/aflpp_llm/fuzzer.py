@@ -46,8 +46,8 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
     # Placeholder comment.
     build_directory = os.environ["OUT"]
 
-    if "lto" not in build_modes:
-        build_modes.append("lto")
+    # if "lto" not in build_modes:
+    #     build_modes.append("lto")
     # If nothing was set this is the default:
     if not build_modes:
         build_modes = ["tracepc", "cmplog", "dict2file"]
@@ -172,7 +172,7 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
     # cases. Prevent these failures by using AFL_QUIET to stop afl-clang-fast
     # from writing AFL specific messages to stderr.
     os.environ["AFL_QUIET"] = "1"
-    os.environ["AFL_MAP_SIZE"] = "10000000" # 2621440
+    os.environ["AFL_MAP_SIZE"] = "16777216" # 2621440
 
     src = os.getenv("SRC")
     work = os.getenv("WORK")
@@ -302,7 +302,7 @@ def fuzz(
     os.environ["AFL_FAST_CAL"] = "1"
     os.environ["AFL_NO_WARN_INSTABILITY"] = "1"
     os.environ["AFL_NO_UI"] = "1"
-    os.environ["AFL_MAP_SIZE"] = "10000000"
+    os.environ["AFL_MAP_SIZE"] = "16777216"
     custom_mutators = "aflpp-mutator.so"
     os.environ["AFL_CUSTOM_MUTATOR_LIBRARY"] = custom_mutators
 
