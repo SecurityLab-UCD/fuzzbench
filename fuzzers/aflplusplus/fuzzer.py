@@ -272,7 +272,6 @@ def fuzz(input_corpus,
     os.environ['AFL_FAST_CAL'] = '1'
     os.environ['AFL_NO_WARN_INSTABILITY'] = '1'
     os.environ["AFL_MAP_SIZE"] = "16777216"
-    os.environ["AFL_DEBUG"]="1"
 
     if not skip:
         os.environ['AFL_DISABLE_TRIM'] = '1'
