@@ -78,6 +78,7 @@ def build_benchmark(env=None):
     benchmark = os.getenv('BENCHMARK')
     fuzzer = os.getenv('FUZZER')
     print(f'Building benchmark {benchmark} with fuzzer {fuzzer}')
+    #lto mode may need ,"./configure","--enable-lto","--disable-shared"
     subprocess.check_call(['/bin/bash', '-ex', build_script], env=env)
 
 

@@ -19,6 +19,7 @@ import shutil
 
 from fuzzers.afl import fuzzer as afl_fuzzer
 from fuzzers import utils
+import subprocess
 
 
 def get_cmplog_build_directory(target_directory):
@@ -47,8 +48,8 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
     if not build_modes:
         build_modes = ['tracepc', 'cmplog', 'dict2file']
 
-    # if "lto" not in build_modes:
-    #     build_modes.append("lto")
+    if "lto" not in build_modes:
+        build_modes.append("lto")
 
     # For bug type benchmarks we have to instrument via native clang pcguard :(
     build_flags = os.environ['CFLAGS']
@@ -73,9 +74,10 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
             os.environ['AR'] = 'llvm-ar-12'
             os.environ['AS'] = 'llvm-as-12'
         else:
-            os.environ['RANLIB'] = 'llvm-ranlib-15'
-            os.environ['AR'] = 'llvm-ar-15'
-            os.environ['AS'] = 'llvm-as-15'
+            os.environ['RANLIB'] = 'llvm-ranlib-17'
+            os.environ['AR'] = 'llvm-ar-17'
+            os.environ['AS'] = 'llvm-as-17'
+            os.environ['LD'] = 'afl-ld-lto'
     elif 'qemu' in build_modes:
         os.environ['CC'] = 'clang'
         os.environ['CXX'] = 'clang++'
@@ -272,7 +274,7 @@ def fuzz(input_corpus,
     os.environ['AFL_FAST_CAL'] = '1'
     os.environ['AFL_NO_WARN_INSTABILITY'] = '1'
     os.environ["AFL_MAP_SIZE"] = "16777216"
-
+    # os.environ["AFL_DEBUG"]="1"
     if not skip:
         os.environ['AFL_DISABLE_TRIM'] = '1'
         os.environ['AFL_CMPLOG_ONLY_NEW'] = '1'

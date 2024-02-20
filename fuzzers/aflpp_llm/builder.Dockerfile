@@ -24,9 +24,9 @@ RUN apt-get update && \
         gcc-$(gcc --version|head -n1|sed 's/\..*//'|sed 's/.* //')-plugin-dev \
         libstdc++-$(gcc --version|head -n1|sed 's/\..*//'|sed 's/.* //')-dev
 
-# RUN wget https://apt.llvm.org/llvm.sh
-# RUN chmod +x llvm.sh
-# RUN ./llvm.sh 17 all
+RUN wget https://apt.llvm.org/llvm.sh
+RUN chmod +x llvm.sh
+RUN ./llvm.sh 17 all
 
 # Clone your fuzzers sources.
 RUN git clone https://github.com/SecurityLab-UCD/AFLplusplus.git /afl && \
@@ -39,11 +39,11 @@ RUN git clone https://github.com/SecurityLab-UCD/AFLplusplus.git /afl && \
 RUN cd /afl && \
     unset CFLAGS CXXFLAGS && \
     export CC=clang AFL_NO_X86=1 && \
-    PYTHON_INCLUDE=/ make && \
+    LLVM_CONFIG=llvm-config-17 PYTHON_INCLUDE=/ make && \
     cp utils/aflpp_driver/libAFLDriver.a /
 
 RUN cd /afl/custom_mutators/aflpp && make
 
 RUN git clone https://github.com/SecurityLab-UCD/structureLLM.git /afl/structureLLM && \
-    git checkout 744705773213d72173862989c267f28ad6dd966c  || \
+    git checkout b1dc95e2d68399bf9f9373f0de0d1c337e48c1b0  || \
     true
