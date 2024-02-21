@@ -245,7 +245,7 @@ def accelerate_run():
         'launch',
         '--mixed_precision',
         'fp16',
-        'structureLLM/ppo_llama2_bloaty_mutator.py',
+        'structureLLM/llama2_mutator.py',
     ]
     subprocess.check_call(command, stdout=output_stream, stderr=output_stream)
 
