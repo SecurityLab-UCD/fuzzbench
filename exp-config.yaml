@@ -23,4 +23,4 @@ local_experiment: true
 
 runner_num_cpu_cores: 60
 
-runner_memory: 256GB
+runner_memory: 512GB
