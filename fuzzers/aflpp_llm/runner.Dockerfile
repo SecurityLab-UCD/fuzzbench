@@ -20,7 +20,7 @@ RUN pip install datasets>=2.14.5
 RUN pip install tqdm==4.65.0
 RUN pip install peft==0.6.2
 RUN pip install accelerate==0.24.1
-RUN pip install transformers>=4.35.0
+RUN pip install transformers==4.35.0
 RUN pip install trl==0.7.2
 RUN pip install tyro
 RUN pip install typing
