@@ -50,6 +50,9 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
     if not build_modes:
         build_modes = ["tracepc", "cmplog", "dict2file"]
 
+    if "lto" not in build_modes:
+        build_modes.append("lto")
+
     # For bug type benchmarks we have to instrument via native clang pcguard :(
     build_flags = os.environ["CFLAGS"]
 

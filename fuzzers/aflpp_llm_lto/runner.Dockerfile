@@ -38,7 +38,11 @@ ENV AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1
 ENV AFL_NO_UI=1
 # ENV AFL_CUSTOM_MUTATOR_LIBRARY=custom_mutators/aflpp/aflpp-mutator.so
 RUN apt-get update && \
-    apt install -y unzip git gdb joe wget
+    apt install -y unzip git gdb joe wget lsb-release software-properties-common
+    # apt-get install libcublas-12-3
+RUN wget https://apt.llvm.org/llvm.sh
+RUN chmod +x llvm.sh
+RUN ./llvm.sh 17 all
 
 RUN wget https://raw.githubusercontent.com/TimDettmers/bitsandbytes/main/install_cuda.sh
 RUN bash install_cuda.sh 118 /usr/local
