@@ -14,14 +14,16 @@
 
 FROM gcr.io/fuzzbench/base-image
 
+    # cd /afl/structureLLM && pip3 install -r requirement.txt
 # This makes interactive docker runs painless:
 ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/out"
-#ENV AFL_MAP_SIZE=2621440
+ENV AFL_MAP_SIZE=16777216
+#2621440
 ENV PATH="$PATH:/out"
 ENV AFL_SKIP_CPUFREQ=1
 ENV AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1
 # ENV AFL_TESTCACHE_SIZE=2
 ENV AFL_NO_UI=1
+# ENV AFL_CUSTOM_MUTATOR_LIBRARY=custom_mutators/aflpp/aflpp-mutator.so
 RUN apt-get update && \
     apt install -y unzip git gdb joe wget
-    # apt-get install libcublas-12-3

@@ -16,6 +16,8 @@
 
 import os
 import shutil
+import time
+import subprocess
 import multiprocessing
 
 from fuzzers.afl import fuzzer as afl_fuzzer
@@ -62,18 +64,11 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
         os.environ["CXX"] = "/afl/afl-clang-lto++"
         edge_file = build_directory + "/aflpp_edges.txt"
         os.environ["AFL_LLVM_DOCUMENT_IDS"] = edge_file
-        if os.path.isfile("/usr/local/bin/llvm-ranlib-13"):
-            os.environ["RANLIB"] = "llvm-ranlib-13"
-            os.environ["AR"] = "llvm-ar-13"
-            os.environ["AS"] = "llvm-as-13"
-        elif os.path.isfile("/usr/local/bin/llvm-ranlib-12"):
-            os.environ["RANLIB"] = "llvm-ranlib-12"
-            os.environ["AR"] = "llvm-ar-12"
-            os.environ["AS"] = "llvm-as-12"
-        else:
-            os.environ["RANLIB"] = "llvm-ranlib"
-            os.environ["AR"] = "llvm-ar"
-            os.environ["AS"] = "llvm-as"
+        os.environ["LD"] ="/afl/afl-clang-lto"
+        os.environ["DCLANG_ENABLE_OPAQUE_POINTERS"] ="ON"
+        os.environ["RANLIB"] = "llvm-ranlib-17"
+        os.environ["AR"] = "llvm-ar-17"
+        os.environ["AS"] = "llvm-as-17"
     elif "qemu" in build_modes:
         os.environ["CC"] = "clang"
         os.environ["CXX"] = "clang++"
@@ -166,7 +161,7 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
     # cases. Prevent these failures by using AFL_QUIET to stop afl-clang-fast
     # from writing AFL specific messages to stderr.
     os.environ["AFL_QUIET"] = "1"
-    os.environ["AFL_MAP_SIZE"] = "2621440"
+    os.environ["AFL_MAP_SIZE"] = "16777216" # 2621440
 
     src = os.getenv("SRC")
     work = os.getenv("WORK")
@@ -231,19 +226,21 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
     if os.path.exists("/get_frida_entry.sh"):
         shutil.copy("/afl/afl-frida-trace.so", build_directory)
         shutil.copy("/get_frida_entry.sh", build_directory)
-    if os.path.exists("/afl/custom_mutators/aflpp_llm_baseline/aflpp-mutator.so"):
-        shutil.copy("/afl/custom_mutators/aflpp_llm_baseline/aflpp-mutator.so",
+    if os.path.exists("/afl/custom_mutators/aflpp/aflpp-mutator.so"):
+        shutil.copy("/afl/custom_mutators/aflpp/aflpp-mutator.so",
                     build_directory)
+    if os.path.exists("/afl/structureLLM"):
+        shutil.copytree("/afl/structureLLM", build_directory + "/structureLLM/")
 
 
 def afl_fuzzer_run(input_corpus, output_corpus, target_binary, flags):
     """Run a subprocess to run fuzzer."""
-    print("Start run afl_fuzzer")
+    # time.sleep(400)
     afl_fuzzer.run_afl_fuzz(input_corpus,
                             output_corpus,
                             target_binary,
                             additional_flags=flags)
-
+    
 # pylint: disable=too-many-arguments
 def fuzz(
     input_corpus,
@@ -281,8 +278,10 @@ def fuzz(
     os.environ["AFL_FAST_CAL"] = "1"
     os.environ["AFL_NO_WARN_INSTABILITY"] = "1"
     os.environ["AFL_NO_UI"] = "1"
-    custom_mutators = "aflpp-mutator.so"
-    os.environ["AFL_CUSTOM_MUTATOR_LIBRARY"] = custom_mutators
+    os.environ["AFL_MAP_SIZE"] = "16777216"
+    # Baseline has no custom mutator
+    # custom_mutators = "aflpp-mutator.so"
+    # os.environ["AFL_CUSTOM_MUTATOR_LIBRARY"] = custom_mutators
 
     if not skip:
         os.environ["AFL_DISABLE_TRIM"] = "1"

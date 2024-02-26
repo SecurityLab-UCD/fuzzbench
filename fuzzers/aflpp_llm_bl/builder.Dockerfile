@@ -5,7 +5,9 @@ RUN apt-get update && \
     apt-get install -y \
         build-essential \
         python3-dev \
+        # python3-pip \
         python3-setuptools \
+        # nvidia-driver-535 \
         automake \
         cmake \
         git \
@@ -23,7 +25,7 @@ RUN apt-get update && \
 # Clone your fuzzers sources.
 RUN git clone https://github.com/SecurityLab-UCD/AFLplusplus.git /afl && \
     cd /afl && \
-    git checkout 835f1a2dbee0ed65ee6a813f1e11e190d44fcc8b || \
+    git checkout e1e6bd3c7fb4c70ae95d5ba6fd924dc7d9dc06dd || \
     true
 
 # Build without Python support as we don't need it.
@@ -33,5 +35,3 @@ RUN cd /afl && \
     export CC=clang AFL_NO_X86=1 && \
     PYTHON_INCLUDE=/ make && \
     cp utils/aflpp_driver/libAFLDriver.a /
-
-RUN cd /afl/custom_mutators/aflpp_llm_baseline && make

@@ -248,7 +248,7 @@ def accelerate_run():
 
 def afl_fuzzer_run(input_corpus, output_corpus, target_binary, flags):
     """Run a subprocess to run fuzzer."""
-    # time.sleep(400)
+    time.sleep(300)
     afl_fuzzer.run_afl_fuzz(input_corpus,
                             output_corpus,
                             target_binary,
