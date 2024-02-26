@@ -244,11 +244,12 @@ def accelerate_run():
         'fp16',
         'structureLLM/llama2_mutator.py',
     ]
+    time.sleep(100)
     subprocess.check_call(command, stdout=output_stream, stderr=output_stream)
 
 def afl_fuzzer_run(input_corpus, output_corpus, target_binary, flags):
     """Run a subprocess to run fuzzer."""
-    time.sleep(400)
+    # time.sleep(400)
     afl_fuzzer.run_afl_fuzz(input_corpus,
                             output_corpus,
                             target_binary,
