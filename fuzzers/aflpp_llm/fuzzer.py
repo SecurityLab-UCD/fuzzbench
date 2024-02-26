@@ -244,7 +244,7 @@ def accelerate_run():
         'fp16',
         'structureLLM/llama2_mutator.py',
     ]
-    time.sleep(100)
+    time.sleep(7200)
     subprocess.check_call(command, stdout=output_stream, stderr=output_stream)
 
 def afl_fuzzer_run(input_corpus, output_corpus, target_binary, flags):
