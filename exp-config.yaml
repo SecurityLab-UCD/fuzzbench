@@ -21,6 +21,6 @@ report_filestore: /tmp/report-data
 # Flag that indicates this is a local experiment.
 local_experiment: true
 
-runner_num_cpu_cores: 60
+runner_num_cpu_cores: 30
 
 runner_memory: 512GB
