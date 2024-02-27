@@ -277,9 +277,8 @@ def fuzz(
     os.environ["AFL_NO_WARN_INSTABILITY"] = "1"
     os.environ["AFL_NO_UI"] = "1"
     os.environ["AFL_MAP_SIZE"] = "16777216"
-    # Baseline has no custom mutator
-    # custom_mutators = "aflpp-mutator.so"
-    # os.environ["AFL_CUSTOM_MUTATOR_LIBRARY"] = custom_mutators
+    custom_mutators = "aflpp-mutator.so"
+    os.environ["AFL_CUSTOM_MUTATOR_LIBRARY"] = custom_mutators
 
     if not skip:
         os.environ["AFL_DISABLE_TRIM"] = "1"

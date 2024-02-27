@@ -29,11 +29,16 @@ RUN apt-get update && \
         libpixman-1-dev \
         cargo \
         libgtk-3-dev \
+        lsb-release \
+        software-properties-common \
         # for QEMU mode
         ninja-build \
         gcc-$(gcc --version|head -n1|sed 's/\..*//'|sed 's/.* //')-plugin-dev \
         libstdc++-$(gcc --version|head -n1|sed 's/\..*//'|sed 's/.* //')-dev
 
+RUN wget https://apt.llvm.org/llvm.sh
+RUN chmod +x llvm.sh
+RUN ./llvm.sh 17 all
 
 # Download afl++.
 RUN git clone -b dev https://github.com/AFLplusplus/AFLplusplus /afl && \
@@ -46,5 +51,5 @@ RUN git clone -b dev https://github.com/AFLplusplus/AFLplusplus /afl && \
 RUN cd /afl && \
     unset CFLAGS CXXFLAGS && \
     export CC=clang AFL_NO_X86=1 && \
-    PYTHON_INCLUDE=/ make && \
+    LLVM_CONFIG=llvm-config-17 PYTHON_INCLUDE=/ make && \
     cp utils/aflpp_driver/libAFLDriver.a /
