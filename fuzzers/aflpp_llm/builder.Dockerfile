@@ -25,7 +25,7 @@ RUN apt-get update && \
 # Clone your fuzzers sources.
 RUN git clone https://github.com/SecurityLab-UCD/AFLplusplus.git /afl && \
     cd /afl && \
-    git checkout d176137737429849b0d07995e68e63fc08aa3818 || \
+    git checkout 4e3bb436b9bd91666fecc67b37b83f6a731b4f32 || \
     true
 
 # Build without Python support as we don't need it.
@@ -39,5 +39,5 @@ RUN cd /afl && \
 RUN cd /afl/custom_mutators/aflpp && make
 
 RUN git clone https://github.com/SecurityLab-UCD/structureLLM.git /afl/structureLLM && \
-    git checkout c0c5865f87492540730f5aa8afc4b536e9bf6208  || \
+    git checkout 1000bd745d4b4228b733b68a6c90a09c852d921d  || \
     true
