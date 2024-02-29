@@ -39,5 +39,5 @@ RUN cd /afl && \
 RUN cd /afl/custom_mutators/aflpp && make
 
 RUN git clone https://github.com/SecurityLab-UCD/structureLLM.git /afl/structureLLM && \
-    git checkout 01c6bfee5f2a164b74e9fc74d58c68990e14da69  || \
+    git checkout f931e6cb0a3765ac43068fe5ed3c3a2a8cff062a  || \
     true
