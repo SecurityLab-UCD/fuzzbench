@@ -2,8 +2,8 @@
 trials: 1
 
 # The amount of time in seconds that each trial is run for.
-# 2 day = 172800 1 day = 24 * 60 * 60 = 86400 16*3600=57600
-max_total_time: 86400
+# 2 day = 172800 1 day = 24 * 60 * 60 = 86400 20*60=1200
+max_total_time: 2400
 
 # The location of the docker registry.
 # FIXME: Support custom docker registry.
