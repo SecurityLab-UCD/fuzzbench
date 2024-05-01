@@ -1,0 +1,4 @@
+commit: 828cdb77ba434eb11ce19f7f0d4482e744b27064
+commit_date: 2024-04-24 06:04:49+00:00
+fuzz_target: mvc_dec_fuzzer
+project: libavc

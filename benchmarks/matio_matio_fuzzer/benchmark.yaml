@@ -1,0 +1,4 @@
+commit: a9bfd9ffc1ce196cc27b96f2d9655992d72176c3
+commit_date: 2024-04-24 05:28:32+00:00
+fuzz_target: matio_fuzzer
+project: matio
