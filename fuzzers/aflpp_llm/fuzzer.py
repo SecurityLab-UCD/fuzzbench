@@ -246,6 +246,12 @@ def accelerate_run():
         "--mixed_precision",
         "fp16",
         "structureLLM/llama2_mutator.py",
+        "--fuzzing_target",
+        "kamailio",
+        "--fuzzing_object",
+        "parse_msg",
+        "--temperature",
+        "1",
     ]
     subprocess.check_call(command, stdout=output_stream, stderr=output_stream)
 
