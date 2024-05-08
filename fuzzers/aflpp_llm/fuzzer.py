@@ -247,9 +247,9 @@ def accelerate_run():
         "fp16",
         "structureLLM/llama2_mutator.py",
         "--fuzzing_target",
-        "kamailio",
+        "binutils",
         "--fuzzing_object",
-        "parse_msg",
+        "nm",
         "--temperature",
         "1",
     ]
