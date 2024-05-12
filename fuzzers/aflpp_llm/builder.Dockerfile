@@ -5,9 +5,7 @@ RUN apt-get update && \
     apt-get install -y \
         build-essential \
         python3-dev \
-        # python3-pip \
         python3-setuptools \
-        # nvidia-driver-535 \
         automake \
         cmake \
         git \
@@ -36,8 +34,8 @@ RUN cd /afl && \
     PYTHON_INCLUDE=/ make && \
     cp utils/aflpp_driver/libAFLDriver.a /
 
-RUN cd /afl/custom_mutators/aflpp && make
-
 RUN git clone https://github.com/SecurityLab-UCD/structureLLM.git /afl/structureLLM && \
     git checkout b7799416bf5a713b070d0b2044849fd951253e2d  || \
     true
+
+RUN cd /afl/custom_mutators/aflpp && make
