@@ -34,8 +34,10 @@ RUN cd /afl && \
     PYTHON_INCLUDE=/ make && \
     cp utils/aflpp_driver/libAFLDriver.a /
 
-RUN git clone https://github.com/SecurityLab-UCD/structureLLM.git /afl/structureLLM && \
-    git checkout b7799416bf5a713b070d0b2044849fd951253e2d  || \
-    true
 
 RUN cd /afl/custom_mutators/aflpp && make
+
+RUN git clone https://github.com/SecurityLab-UCD/structureLLM.git /afl/structureLLM && \
+    cd /afl/structureLLM && \
+    git checkout b7799416bf5a713b070d0b2044849fd951253e2d  && \
+    cd ..
