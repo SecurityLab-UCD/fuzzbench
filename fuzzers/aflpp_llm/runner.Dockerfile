@@ -44,5 +44,3 @@ RUN wget https://raw.githubusercontent.com/TimDettmers/bitsandbytes/main/install
 RUN bash install_cuda.sh 118 /usr/local
 
 ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-11.8/lib64"
-
-RUN accelerate launch --mixed_precision fp16 "/out/structureLLM/download_model.py"

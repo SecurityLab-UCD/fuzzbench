@@ -249,7 +249,7 @@ def accelerate_run():
         "--fuzzing_target",
         "binutils",
         "--fuzzing_object",
-        "objcopy",
+        "nm",
         "--temperature",
         "1",
     ]
@@ -309,6 +309,17 @@ def fuzz(
         os.environ["AFL_CMPLOG_ONLY_NEW"] = "1"
         if "ADDITIONAL_ARGS" in os.environ:
             flags += os.environ["ADDITIONAL_ARGS"].split(" ")
+    subprocess.check_call(
+        [
+            "accelerate",
+            "launch",
+            "--mixed_precision",
+            "fp16",
+            "./structureLLM/download_model.py",
+        ],
+        stdout=None,
+        stderr=None,
+    )
 
     acc_p = multiprocessing.Process(target=accelerate_run)
     afl_p = multiprocessing.Process(

@@ -1,0 +1,1428 @@
+docker build \
+--tag gcr.io/fuzzbench/builders/benchmark/binutils_fuzz_objcopy \
+--build-arg BUILDKIT_INLINE_CACHE=1 \
+--cache-from gcr.io/fuzzbench/builders/benchmark/binutils_fuzz_objcopy \
+--file benchmarks/binutils_fuzz_objcopy/Dockerfile \
+benchmarks/binutils_fuzz_objcopy
+docker build \
+--tag gcr.io/fuzzbench/builders/aflpp_llm/binutils_fuzz_objcopy-intermediate \
+--build-arg BUILDKIT_INLINE_CACHE=1 \
+--cache-from gcr.io/fuzzbench/builders/aflpp_llm/binutils_fuzz_objcopy-intermediate \
+--build-arg parent_image=gcr.io/fuzzbench/builders/benchmark/binutils_fuzz_objcopy \
+--file fuzzers/aflpp_llm/builder.Dockerfile \
+fuzzers/aflpp_llm
+docker pull ubuntu:focal
+focal: Pulling from library/ubuntu
+Digest: sha256:874aca52f79ae5f8258faff03e10ce99ae836f6e7d2df6ecd3da5c1cad3a912b
+Status: Image is up to date for ubuntu:focal
+docker.io/library/ubuntu:focal
+docker build \
+--tag gcr.io/fuzzbench/base-image \
+--build-arg BUILDKIT_INLINE_CACHE=1 \
+--cache-from gcr.io/fuzzbench/base-image \
+--file docker/base-image/Dockerfile \
+.
+docker build \
+--tag gcr.io/fuzzbench/builders/aflpp_llm/binutils_fuzz_objcopy \
+--build-arg BUILDKIT_INLINE_CACHE=1 \
+--cache-from gcr.io/fuzzbench/builders/aflpp_llm/binutils_fuzz_objcopy \
+--build-arg benchmark=binutils_fuzz_objcopy \
+--build-arg fuzzer=aflpp_llm \
+--build-arg parent_image=gcr.io/fuzzbench/builders/aflpp_llm/binutils_fuzz_objcopy-intermediate \
+--file docker/benchmark-builder/Dockerfile \
+.
+docker build \
+--tag gcr.io/fuzzbench/runners/aflpp_llm/binutils_fuzz_objcopy-intermediate \
+--build-arg BUILDKIT_INLINE_CACHE=1 \
+--cache-from gcr.io/fuzzbench/runners/aflpp_llm/binutils_fuzz_objcopy-intermediate \
+--file fuzzers/aflpp_llm/runner.Dockerfile \
+fuzzers/aflpp_llm
+docker build \
+--tag gcr.io/fuzzbench/runners/aflpp_llm/binutils_fuzz_objcopy \
+--build-arg BUILDKIT_INLINE_CACHE=1 \
+--cache-from gcr.io/fuzzbench/runners/aflpp_llm/binutils_fuzz_objcopy \
+--build-arg benchmark=binutils_fuzz_objcopy \
+--build-arg fuzzer=aflpp_llm \
+--file docker/benchmark-runner/Dockerfile \
+.
+docker run \
+--cpus 30 \
+--gpus all \
+--shm-size=256g \
+--cap-add SYS_NICE \
+--cap-add SYS_PTRACE \
+-e FUZZ_OUTSIDE_EXPERIMENT=1 \
+-e FORCE_LOCAL=1 \
+-e TRIAL_ID=1 \
+-e FUZZER=aflpp_llm \
+-e BENCHMARK=binutils_fuzz_objcopy \
+-e FUZZ_TARGET=fuzz_objcopy \
+-it gcr.io/fuzzbench/runners/aflpp_llm/binutils_fuzz_objcopy
+INFO:root:Doing trial as part of experiment.
+INFO:root:Starting trial.
+INFO:root:Unarchived 96 files from seed corpus /out/fuzz_objcopy_seed_corpus.zip.
+WARNING:root:max_total_time is None. Fuzzing indefinitely.
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:441: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:309: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_processes` was set to a value of `8`
+		More than one GPU was found, enabling multi-GPU training.
+		If this was unintended please pass in `--num_processes=1`.
+	`--num_machines` was set to a value of `1`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:441: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:441: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:441: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:441: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:441: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:441: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:309: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:309: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:309: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:309: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:309: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:309: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:441: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:309: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:441: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:309: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+Downloading tokenizer_config.json:   0% 0.00/1.62k [00:00<?, ?B/s]Downloading tokenizer_config.json: 100% 1.62k/1.62k [00:00<00:00, 10.4MB/s]
+Downloading tokenizer.model:   0% 0.00/500k [00:00<?, ?B/s]Downloading tokenizer.model: 100% 500k/500k [00:00<00:00, 21.9MB/s]
+Downloading tokenizer.json:   0% 0.00/1.84M [00:00<?, ?B/s]Downloading tokenizer.json: 100% 1.84M/1.84M [00:00<00:00, 36.2MB/s]
+Downloading (…)cial_tokens_map.json:   0% 0.00/414 [00:00<?, ?B/s]Downloading (…)cial_tokens_map.json: 100% 414/414 [00:00<00:00, 2.66MB/s]
+Downloading config.json:   0% 0.00/614 [00:00<?, ?B/s]Downloading config.json: 100% 614/614 [00:00<00:00, 3.96MB/s]
+Downloading (…)fetensors.index.json:   0% 0.00/26.8k [00:00<?, ?B/s]Downloading (…)fetensors.index.json: 100% 26.8k/26.8k [00:00<00:00, 87.5MB/s]
+Downloading shards:   0% 0/2 [00:00<?, ?it/s]Downloading shards:   0% 0/2 [00:00<?, ?it/s]Downloading shards:   0% 0/2 [00:00<?, ?it/s]Downloading shards:   0% 0/2 [00:00<?, ?it/s]Downloading shards:   0% 0/2 [00:00<?, ?it/s]Downloading shards:   0% 0/2 [00:00<?, ?it/s]Downloading shards:   0% 0/2 [00:00<?, ?it/s]Downloading shards:   0% 0/2 [00:00<?, ?it/s]
+Downloading (…)of-00002.safetensors:   0% 0.00/9.98G [00:00<?, ?B/s][A
+Downloading (…)of-00002.safetensors:   0% 10.5M/9.98G [00:00<01:47, 92.8MB/s][A
+Downloading (…)of-00002.safetensors:   0% 31.5M/9.98G [00:00<01:34, 105MB/s] [A
+Downloading (…)of-00002.safetensors:   1% 52.4M/9.98G [00:00<01:31, 109MB/s][A
+Downloading (…)of-00002.safetensors:   1% 73.4M/9.98G [00:00<01:28, 112MB/s][A
+Downloading (…)of-00002.safetensors:   1% 94.4M/9.98G [00:00<01:26, 114MB/s][A
+Downloading (…)of-00002.safetensors:   1% 115M/9.98G [00:01<01:25, 115MB/s] [A
+Downloading (…)of-00002.safetensors:   1% 136M/9.98G [00:01<01:25, 115MB/s][A
+Downloading (…)of-00002.safetensors:   2% 157M/9.98G [00:01<01:24, 116MB/s][A
+Downloading (…)of-00002.safetensors:   2% 178M/9.98G [00:01<01:24, 116MB/s][A
+Downloading (…)of-00002.safetensors:   2% 199M/9.98G [00:01<01:24, 116MB/s][A
+Downloading (…)of-00002.safetensors:   2% 220M/9.98G [00:01<01:24, 116MB/s][A
+Downloading (…)of-00002.safetensors:   2% 241M/9.98G [00:02<01:23, 116MB/s][A
+Downloading (…)of-00002.safetensors:   3% 262M/9.98G [00:02<01:23, 116MB/s][A
+Downloading (…)of-00002.safetensors:   3% 283M/9.98G [00:02<01:25, 114MB/s][A
+Downloading (…)of-00002.safetensors:   3% 304M/9.98G [00:02<01:24, 115MB/s][A
+Downloading (…)of-00002.safetensors:   3% 325M/9.98G [00:02<01:23, 116MB/s][A
+Downloading (…)of-00002.safetensors:   3% 346M/9.98G [00:03<01:23, 116MB/s][A
+Downloading (…)of-00002.safetensors:   4% 367M/9.98G [00:03<01:22, 116MB/s][A
+Downloading (…)of-00002.safetensors:   4% 388M/9.98G [00:03<01:22, 116MB/s][A
+Downloading (…)of-00002.safetensors:   4% 409M/9.98G [00:03<01:23, 115MB/s][A
+Downloading (…)of-00002.safetensors:   4% 430M/9.98G [00:03<01:22, 115MB/s][A
+Downloading (…)of-00002.safetensors:   5% 451M/9.98G [00:03<01:22, 116MB/s][A
+Downloading (…)of-00002.safetensors:   5% 472M/9.98G [00:04<01:21, 116MB/s][A
+Downloading (…)of-00002.safetensors:   5% 493M/9.98G [00:04<01:21, 116MB/s][A
+Downloading (…)of-00002.safetensors:   5% 514M/9.98G [00:04<01:22, 115MB/s][A
+Downloading (…)of-00002.safetensors:   5% 535M/9.98G [00:04<01:21, 116MB/s][A
+Downloading (…)of-00002.safetensors:   6% 556M/9.98G [00:04<01:21, 116MB/s][A
+Downloading (…)of-00002.safetensors:   6% 577M/9.98G [00:05<01:20, 116MB/s][A
+Downloading (…)of-00002.safetensors:   6% 598M/9.98G [00:05<01:20, 117MB/s][A
+Downloading (…)of-00002.safetensors:   6% 619M/9.98G [00:05<01:20, 117MB/s][A
+Downloading (…)of-00002.safetensors:   6% 640M/9.98G [00:05<01:20, 115MB/s][A
+Downloading (…)of-00002.safetensors:   7% 661M/9.98G [00:05<01:20, 116MB/s][A
+Downloading (…)of-00002.safetensors:   7% 682M/9.98G [00:05<01:19, 116MB/s][A
+Downloading (…)of-00002.safetensors:   7% 703M/9.98G [00:06<01:19, 116MB/s][A
+Downloading (…)of-00002.safetensors:   7% 724M/9.98G [00:06<01:19, 117MB/s][A
+Downloading (…)of-00002.safetensors:   7% 744M/9.98G [00:06<01:19, 117MB/s][A
+Downloading (…)of-00002.safetensors:   8% 765M/9.98G [00:06<01:18, 117MB/s][A
+Downloading (…)of-00002.safetensors:   8% 786M/9.98G [00:06<01:18, 117MB/s][A
+Downloading (…)of-00002.safetensors:   8% 807M/9.98G [00:06<01:18, 117MB/s][A
+Downloading (…)of-00002.safetensors:   8% 828M/9.98G [00:07<01:18, 117MB/s][A
+Downloading (…)of-00002.safetensors:   9% 849M/9.98G [00:07<01:18, 117MB/s][A
+Downloading (…)of-00002.safetensors:   9% 870M/9.98G [00:07<01:19, 115MB/s][A
+Downloading (…)of-00002.safetensors:   9% 891M/9.98G [00:07<01:18, 116MB/s][A
+Downloading (…)of-00002.safetensors:   9% 912M/9.98G [00:07<01:18, 116MB/s][A
+Downloading (…)of-00002.safetensors:   9% 933M/9.98G [00:08<01:17, 116MB/s][A
+Downloading (…)of-00002.safetensors:  10% 954M/9.98G [00:08<01:17, 116MB/s][A
+Downloading (…)of-00002.safetensors:  10% 975M/9.98G [00:08<01:18, 115MB/s][A
+Downloading (…)of-00002.safetensors:  10% 996M/9.98G [00:08<01:17, 116MB/s][A
+Downloading (…)of-00002.safetensors:  10% 1.02G/9.98G [00:08<01:17, 116MB/s][A
+Downloading (…)of-00002.safetensors:  10% 1.04G/9.98G [00:08<01:16, 116MB/s][A
+Downloading (…)of-00002.safetensors:  11% 1.06G/9.98G [00:09<01:16, 116MB/s][A
+Downloading (…)of-00002.safetensors:  11% 1.08G/9.98G [00:09<01:16, 116MB/s][A
+Downloading (…)of-00002.safetensors:  11% 1.10G/9.98G [00:09<01:17, 115MB/s][A
+Downloading (…)of-00002.safetensors:  11% 1.12G/9.98G [00:09<01:16, 116MB/s][A
+Downloading (…)of-00002.safetensors:  11% 1.14G/9.98G [00:09<01:16, 116MB/s][A
+Downloading (…)of-00002.safetensors:  12% 1.16G/9.98G [00:10<01:42, 86.3MB/s][A
+Downloading (…)of-00002.safetensors:  12% 1.18G/9.98G [00:10<01:35, 92.1MB/s][A
+Downloading (…)of-00002.safetensors:  12% 1.21G/9.98G [00:10<01:29, 98.4MB/s][A
+Downloading (…)of-00002.safetensors:  12% 1.23G/9.98G [00:10<01:24, 103MB/s] [A
+Downloading (…)of-00002.safetensors:  13% 1.25G/9.98G [00:11<01:21, 107MB/s][A
+Downloading (…)of-00002.safetensors:  13% 1.27G/9.98G [00:11<01:19, 110MB/s][A
+Downloading (…)of-00002.safetensors:  13% 1.29G/9.98G [00:11<01:17, 112MB/s][A
+Downloading (…)of-00002.safetensors:  13% 1.31G/9.98G [00:11<01:16, 113MB/s][A
+Downloading (…)of-00002.safetensors:  13% 1.33G/9.98G [00:11<01:15, 114MB/s][A
+Downloading (…)of-00002.safetensors:  14% 1.35G/9.98G [00:11<01:15, 115MB/s][A
+Downloading (…)of-00002.safetensors:  14% 1.37G/9.98G [00:12<01:14, 115MB/s][A
+Downloading (…)of-00002.safetensors:  14% 1.39G/9.98G [00:12<01:14, 116MB/s][A
+Downloading (…)of-00002.safetensors:  14% 1.42G/9.98G [00:12<01:14, 115MB/s][A
+Downloading (…)of-00002.safetensors:  14% 1.44G/9.98G [00:12<01:13, 115MB/s][A
+Downloading (…)of-00002.safetensors:  15% 1.46G/9.98G [00:12<01:13, 116MB/s][A
+Downloading (…)of-00002.safetensors:  15% 1.48G/9.98G [00:12<01:13, 116MB/s][A
+Downloading (…)of-00002.safetensors:  15% 1.50G/9.98G [00:13<01:12, 116MB/s][A
+Downloading (…)of-00002.safetensors:  15% 1.52G/9.98G [00:13<01:13, 116MB/s][A
+Downloading (…)of-00002.safetensors:  15% 1.54G/9.98G [00:13<01:13, 114MB/s][A
+Downloading (…)of-00002.safetensors:  16% 1.56G/9.98G [00:13<01:13, 115MB/s][A
+Downloading (…)of-00002.safetensors:  16% 1.58G/9.98G [00:13<01:12, 116MB/s][A
+Downloading (…)of-00002.safetensors:  16% 1.60G/9.98G [00:14<01:12, 116MB/s][A
+Downloading (…)of-00002.safetensors:  16% 1.63G/9.98G [00:14<01:11, 116MB/s][A
+Downloading (…)of-00002.safetensors:  17% 1.65G/9.98G [00:14<01:12, 115MB/s][A
+Downloading (…)of-00002.safetensors:  17% 1.67G/9.98G [00:14<01:12, 115MB/s][A
+Downloading (…)of-00002.safetensors:  17% 1.69G/9.98G [00:14<01:11, 116MB/s][A
+Downloading (…)of-00002.safetensors:  17% 1.71G/9.98G [00:14<01:11, 116MB/s][A
+Downloading (…)of-00002.safetensors:  17% 1.73G/9.98G [00:15<01:10, 116MB/s][A
+Downloading (…)of-00002.safetensors:  18% 1.75G/9.98G [00:15<01:10, 117MB/s][A
+Downloading (…)of-00002.safetensors:  18% 1.77G/9.98G [00:15<01:11, 115MB/s][A
+Downloading (…)of-00002.safetensors:  18% 1.79G/9.98G [00:15<01:10, 116MB/s][A
+Downloading (…)of-00002.safetensors:  18% 1.81G/9.98G [00:15<01:10, 116MB/s][A
+Downloading (…)of-00002.safetensors:  18% 1.84G/9.98G [00:16<01:14, 110MB/s][A
+Downloading (…)of-00002.safetensors:  19% 1.86G/9.98G [00:16<01:12, 111MB/s][A
+Downloading (…)of-00002.safetensors:  19% 1.88G/9.98G [00:16<01:11, 113MB/s][A
+Downloading (…)of-00002.safetensors:  19% 1.90G/9.98G [00:16<01:10, 114MB/s][A
+Downloading (…)of-00002.safetensors:  19% 1.92G/9.98G [00:16<01:10, 115MB/s][A
+Downloading (…)of-00002.safetensors:  19% 1.94G/9.98G [00:17<01:09, 115MB/s][A
+Downloading (…)of-00002.safetensors:  20% 1.96G/9.98G [00:17<01:09, 115MB/s][A
+Downloading (…)of-00002.safetensors:  20% 1.98G/9.98G [00:17<01:09, 116MB/s][A
+Downloading (…)of-00002.safetensors:  20% 2.00G/9.98G [00:17<01:09, 115MB/s][A
+Downloading (…)of-00002.safetensors:  20% 2.02G/9.98G [00:17<01:09, 115MB/s][A
+Downloading (…)of-00002.safetensors:  20% 2.04G/9.98G [00:17<01:08, 116MB/s][A
+Downloading (…)of-00002.safetensors:  21% 2.07G/9.98G [00:18<01:08, 116MB/s][A
+Downloading (…)of-00002.safetensors:  21% 2.09G/9.98G [00:18<01:07, 116MB/s][A
+Downloading (…)of-00002.safetensors:  21% 2.11G/9.98G [00:18<01:08, 115MB/s][A
+Downloading (…)of-00002.safetensors:  21% 2.13G/9.98G [00:18<01:08, 115MB/s][A
+Downloading (…)of-00002.safetensors:  22% 2.15G/9.98G [00:18<01:07, 116MB/s][A
+Downloading (…)of-00002.safetensors:  22% 2.17G/9.98G [00:19<01:07, 116MB/s][A
+Downloading (…)of-00002.safetensors:  22% 2.19G/9.98G [00:19<01:06, 116MB/s][A
+Downloading (…)of-00002.safetensors:  22% 2.21G/9.98G [00:19<01:07, 116MB/s][A
+Downloading (…)of-00002.safetensors:  22% 2.23G/9.98G [00:19<01:07, 114MB/s][A
+Downloading (…)of-00002.safetensors:  23% 2.25G/9.98G [00:19<01:07, 115MB/s][A
+Downloading (…)of-00002.safetensors:  23% 2.28G/9.98G [00:19<01:06, 116MB/s][A
+Downloading (…)of-00002.safetensors:  23% 2.30G/9.98G [00:20<01:06, 116MB/s][A
+Downloading (…)of-00002.safetensors:  23% 2.32G/9.98G [00:20<01:28, 86.6MB/s][A
+Downloading (…)of-00002.safetensors:  23% 2.34G/9.98G [00:20<01:21, 93.6MB/s][A
+Downloading (…)of-00002.safetensors:  24% 2.36G/9.98G [00:20<01:16, 99.5MB/s][A
+Downloading (…)of-00002.safetensors:  24% 2.38G/9.98G [00:21<01:12, 104MB/s] [A
+Downloading (…)of-00002.safetensors:  24% 2.40G/9.98G [00:21<01:10, 108MB/s][A
+Downloading (…)of-00002.safetensors:  24% 2.42G/9.98G [00:21<01:08, 110MB/s][A
+Downloading (…)of-00002.safetensors:  24% 2.44G/9.98G [00:21<01:07, 112MB/s][A
+Downloading (…)of-00002.safetensors:  25% 2.46G/9.98G [00:21<01:06, 113MB/s][A
+Downloading (…)of-00002.safetensors:  25% 2.49G/9.98G [00:21<01:05, 114MB/s][A
+Downloading (…)of-00002.safetensors:  25% 2.51G/9.98G [00:22<01:05, 115MB/s][A
+Downloading (…)of-00002.safetensors:  25% 2.53G/9.98G [00:22<01:04, 115MB/s][A
+Downloading (…)of-00002.safetensors:  26% 2.55G/9.98G [00:22<01:05, 114MB/s][A
+Downloading (…)of-00002.safetensors:  26% 2.57G/9.98G [00:22<01:04, 115MB/s][A
+Downloading (…)of-00002.safetensors:  26% 2.59G/9.98G [00:22<01:03, 115MB/s][A
+Downloading (…)of-00002.safetensors:  26% 2.61G/9.98G [00:23<01:03, 116MB/s][A
+Downloading (…)of-00002.safetensors:  26% 2.63G/9.98G [00:23<01:03, 116MB/s][A
+Downloading (…)of-00002.safetensors:  27% 2.65G/9.98G [00:23<01:02, 116MB/s][A
+Downloading (…)of-00002.safetensors:  27% 2.67G/9.98G [00:23<01:03, 115MB/s][A
+Downloading (…)of-00002.safetensors:  27% 2.69G/9.98G [00:23<01:03, 115MB/s][A
+Downloading (…)of-00002.safetensors:  27% 2.72G/9.98G [00:23<01:02, 116MB/s][A
+Downloading (…)of-00002.safetensors:  27% 2.74G/9.98G [00:24<01:02, 116MB/s][A
+Downloading (…)of-00002.safetensors:  28% 2.76G/9.98G [00:24<01:02, 116MB/s][A
+Downloading (…)of-00002.safetensors:  28% 2.78G/9.98G [00:24<01:02, 115MB/s][A
+Downloading (…)of-00002.safetensors:  28% 2.80G/9.98G [00:24<01:02, 115MB/s][A
+Downloading (…)of-00002.safetensors:  28% 2.82G/9.98G [00:24<01:01, 116MB/s][A
+Downloading (…)of-00002.safetensors:  28% 2.84G/9.98G [00:24<01:01, 116MB/s][A
+Downloading (…)of-00002.safetensors:  29% 2.86G/9.98G [00:25<01:01, 116MB/s][A
+Downloading (…)of-00002.safetensors:  29% 2.88G/9.98G [00:25<01:00, 117MB/s][A
+Downloading (…)of-00002.safetensors:  29% 2.90G/9.98G [00:25<01:01, 115MB/s][A
+Downloading (…)of-00002.safetensors:  29% 2.93G/9.98G [00:25<01:00, 116MB/s][A
+Downloading (…)of-00002.safetensors:  30% 2.95G/9.98G [00:25<01:00, 116MB/s][A
+Downloading (…)of-00002.safetensors:  30% 2.97G/9.98G [00:26<01:00, 116MB/s][A
+Downloading (…)of-00002.safetensors:  30% 2.99G/9.98G [00:26<00:59, 117MB/s][A
+Downloading (…)of-00002.safetensors:  30% 3.01G/9.98G [00:26<00:59, 117MB/s][A
+Downloading (…)of-00002.safetensors:  30% 3.03G/9.98G [00:26<00:59, 117MB/s][A
+Downloading (…)of-00002.safetensors:  31% 3.05G/9.98G [00:26<00:59, 117MB/s][A
+Downloading (…)of-00002.safetensors:  31% 3.07G/9.98G [00:26<00:59, 116MB/s][A
+Downloading (…)of-00002.safetensors:  31% 3.09G/9.98G [00:27<00:58, 117MB/s][A
+Downloading (…)of-00002.safetensors:  31% 3.11G/9.98G [00:27<00:58, 117MB/s][A
+Downloading (…)of-00002.safetensors:  31% 3.14G/9.98G [00:27<00:59, 115MB/s][A
+Downloading (…)of-00002.safetensors:  32% 3.16G/9.98G [00:27<00:59, 116MB/s][A
+Downloading (…)of-00002.safetensors:  32% 3.18G/9.98G [00:27<00:58, 116MB/s][A
+Downloading (…)of-00002.safetensors:  32% 3.20G/9.98G [00:28<00:58, 116MB/s][A
+Downloading (…)of-00002.safetensors:  32% 3.22G/9.98G [00:28<00:58, 116MB/s][A
+Downloading (…)of-00002.safetensors:  32% 3.24G/9.98G [00:28<00:58, 115MB/s][A
+Downloading (…)of-00002.safetensors:  33% 3.26G/9.98G [00:28<00:58, 115MB/s][A
+Downloading (…)of-00002.safetensors:  33% 3.28G/9.98G [00:28<00:57, 116MB/s][A
+Downloading (…)of-00002.safetensors:  33% 3.30G/9.98G [00:28<00:57, 116MB/s][A
+Downloading (…)of-00002.safetensors:  33% 3.32G/9.98G [00:29<00:57, 116MB/s][A
+Downloading (…)of-00002.safetensors:  34% 3.34G/9.98G [00:29<00:57, 116MB/s][A
+Downloading (…)of-00002.safetensors:  34% 3.37G/9.98G [00:29<00:57, 115MB/s][A
+Downloading (…)of-00002.safetensors:  34% 3.39G/9.98G [00:29<00:57, 116MB/s][A
+Downloading (…)of-00002.safetensors:  34% 3.41G/9.98G [00:29<00:56, 116MB/s][A
+Downloading (…)of-00002.safetensors:  34% 3.43G/9.98G [00:30<00:56, 116MB/s][A
+Downloading (…)of-00002.safetensors:  35% 3.45G/9.98G [00:30<00:56, 116MB/s][A
+Downloading (…)of-00002.safetensors:  35% 3.47G/9.98G [00:30<00:56, 115MB/s][A
+Downloading (…)of-00002.safetensors:  35% 3.49G/9.98G [00:30<01:15, 85.6MB/s][A
+Downloading (…)of-00002.safetensors:  35% 3.51G/9.98G [00:30<01:09, 93.0MB/s][A
+Downloading (…)of-00002.safetensors:  35% 3.53G/9.98G [00:31<01:05, 99.1MB/s][A
+Downloading (…)of-00002.safetensors:  36% 3.55G/9.98G [00:31<01:01, 104MB/s] [A
+Downloading (…)of-00002.safetensors:  36% 3.58G/9.98G [00:31<00:59, 107MB/s][A
+Downloading (…)of-00002.safetensors:  36% 3.60G/9.98G [00:31<00:58, 110MB/s][A
+Downloading (…)of-00002.safetensors:  36% 3.62G/9.98G [00:31<00:56, 112MB/s][A
+Downloading (…)of-00002.safetensors:  36% 3.64G/9.98G [00:32<00:56, 113MB/s][A
+Downloading (…)of-00002.safetensors:  37% 3.66G/9.98G [00:32<00:55, 114MB/s][A
+Downloading (…)of-00002.safetensors:  37% 3.68G/9.98G [00:32<00:55, 114MB/s][A
+Downloading (…)of-00002.safetensors:  37% 3.70G/9.98G [00:32<00:54, 114MB/s][A
+Downloading (…)of-00002.safetensors:  37% 3.72G/9.98G [00:32<00:54, 115MB/s][A
+Downloading (…)of-00002.safetensors:  38% 3.74G/9.98G [00:32<00:53, 116MB/s][A
+Downloading (…)of-00002.safetensors:  38% 3.76G/9.98G [00:33<00:53, 116MB/s][A
+Downloading (…)of-00002.safetensors:  38% 3.79G/9.98G [00:33<00:53, 116MB/s][A
+Downloading (…)of-00002.safetensors:  38% 3.81G/9.98G [00:33<00:53, 114MB/s][A
+Downloading (…)of-00002.safetensors:  38% 3.83G/9.98G [00:33<00:53, 115MB/s][A
+Downloading (…)of-00002.safetensors:  39% 3.85G/9.98G [00:33<00:53, 116MB/s][A
+Downloading (…)of-00002.safetensors:  39% 3.87G/9.98G [00:34<00:52, 116MB/s][A
+Downloading (…)of-00002.safetensors:  39% 3.89G/9.98G [00:34<00:52, 116MB/s][A
+Downloading (…)of-00002.safetensors:  39% 3.91G/9.98G [00:34<00:52, 115MB/s][A
+Downloading (…)of-00002.safetensors:  39% 3.93G/9.98G [00:34<00:52, 115MB/s][A
+Downloading (…)of-00002.safetensors:  40% 3.95G/9.98G [00:34<00:52, 116MB/s][A
+Downloading (…)of-00002.safetensors:  40% 3.97G/9.98G [00:34<00:51, 116MB/s][A
+Downloading (…)of-00002.safetensors:  40% 4.00G/9.98G [00:35<00:51, 116MB/s][A
+Downloading (…)of-00002.safetensors:  40% 4.02G/9.98G [00:35<00:51, 116MB/s][A
+Downloading (…)of-00002.safetensors:  40% 4.04G/9.98G [00:35<00:51, 115MB/s][A
+Downloading (…)of-00002.safetensors:  41% 4.06G/9.98G [00:35<00:51, 115MB/s][A
+Downloading (…)of-00002.safetensors:  41% 4.08G/9.98G [00:35<00:50, 116MB/s][A
+Downloading (…)of-00002.safetensors:  41% 4.10G/9.98G [00:36<00:50, 116MB/s][A
+Downloading (…)of-00002.safetensors:  41% 4.12G/9.98G [00:36<00:50, 116MB/s][A
+Downloading (…)of-00002.safetensors:  42% 4.14G/9.98G [00:36<00:50, 116MB/s][A
+Downloading (…)of-00002.safetensors:  42% 4.16G/9.98G [00:36<00:49, 117MB/s][A
+Downloading (…)of-00002.safetensors:  42% 4.18G/9.98G [00:36<00:49, 117MB/s][A
+Downloading (…)of-00002.safetensors:  42% 4.20G/9.98G [00:36<00:49, 117MB/s][A
+Downloading (…)of-00002.safetensors:  42% 4.23G/9.98G [00:37<00:49, 117MB/s][A
+Downloading (…)of-00002.safetensors:  43% 4.25G/9.98G [00:37<00:49, 116MB/s][A
+Downloading (…)of-00002.safetensors:  43% 4.27G/9.98G [00:37<00:49, 115MB/s][A
+Downloading (…)of-00002.safetensors:  43% 4.29G/9.98G [00:37<00:49, 116MB/s][A
+Downloading (…)of-00002.safetensors:  43% 4.31G/9.98G [00:37<00:48, 116MB/s][A
+Downloading (…)of-00002.safetensors:  43% 4.33G/9.98G [00:38<00:48, 116MB/s][A
+Downloading (…)of-00002.safetensors:  44% 4.35G/9.98G [00:38<00:48, 116MB/s][A
+Downloading (…)of-00002.safetensors:  44% 4.37G/9.98G [00:38<00:48, 117MB/s][A
+Downloading (…)of-00002.safetensors:  44% 4.39G/9.98G [00:38<00:48, 115MB/s][A
+Downloading (…)of-00002.safetensors:  44% 4.41G/9.98G [00:38<00:48, 116MB/s][A
+Downloading (…)of-00002.safetensors:  44% 4.44G/9.98G [00:38<00:47, 116MB/s][A
+Downloading (…)of-00002.safetensors:  45% 4.46G/9.98G [00:39<00:47, 116MB/s][A
+Downloading (…)of-00002.safetensors:  45% 4.48G/9.98G [00:39<00:47, 116MB/s][A
+Downloading (…)of-00002.safetensors:  45% 4.50G/9.98G [00:39<00:47, 115MB/s][A
+Downloading (…)of-00002.safetensors:  45% 4.52G/9.98G [00:39<00:47, 115MB/s][A
+Downloading (…)of-00002.safetensors:  46% 4.54G/9.98G [00:39<00:46, 116MB/s][A
+Downloading (…)of-00002.safetensors:  46% 4.56G/9.98G [00:40<00:46, 116MB/s][A
+Downloading (…)of-00002.safetensors:  46% 4.58G/9.98G [00:40<00:46, 116MB/s][A
+Downloading (…)of-00002.safetensors:  46% 4.60G/9.98G [00:40<00:46, 116MB/s][A
+Downloading (…)of-00002.safetensors:  46% 4.62G/9.98G [00:40<00:46, 115MB/s][A
+Downloading (…)of-00002.safetensors:  47% 4.65G/9.98G [00:40<01:01, 86.1MB/s][A
+Downloading (…)of-00002.safetensors:  47% 4.67G/9.98G [00:41<00:56, 93.3MB/s][A
+Downloading (…)of-00002.safetensors:  47% 4.69G/9.98G [00:41<00:53, 99.4MB/s][A
+Downloading (…)of-00002.safetensors:  47% 4.71G/9.98G [00:41<00:50, 104MB/s] [A
+Downloading (…)of-00002.safetensors:  47% 4.73G/9.98G [00:41<00:48, 107MB/s][A
+Downloading (…)of-00002.safetensors:  48% 4.75G/9.98G [00:41<00:47, 110MB/s][A
+Downloading (…)of-00002.safetensors:  48% 4.77G/9.98G [00:42<00:46, 112MB/s][A
+Downloading (…)of-00002.safetensors:  48% 4.79G/9.98G [00:42<00:45, 113MB/s][A
+Downloading (…)of-00002.safetensors:  48% 4.81G/9.98G [00:42<00:45, 114MB/s][A
+Downloading (…)of-00002.safetensors:  48% 4.83G/9.98G [00:42<00:45, 114MB/s][A
+Downloading (…)of-00002.safetensors:  49% 4.85G/9.98G [00:42<00:44, 115MB/s][A
+Downloading (…)of-00002.safetensors:  49% 4.88G/9.98G [00:42<00:44, 115MB/s][A
+Downloading (…)of-00002.safetensors:  49% 4.90G/9.98G [00:43<00:43, 116MB/s][A
+Downloading (…)of-00002.safetensors:  49% 4.92G/9.98G [00:43<00:43, 116MB/s][A
+Downloading (…)of-00002.safetensors:  50% 4.94G/9.98G [00:43<00:43, 115MB/s][A
+Downloading (…)of-00002.safetensors:  50% 4.96G/9.98G [00:43<00:43, 115MB/s][A
+Downloading (…)of-00002.safetensors:  50% 4.98G/9.98G [00:43<00:43, 116MB/s][A
+Downloading (…)of-00002.safetensors:  50% 5.00G/9.98G [00:44<00:42, 116MB/s][A
+Downloading (…)of-00002.safetensors:  50% 5.02G/9.98G [00:44<00:42, 116MB/s][A
+Downloading (…)of-00002.safetensors:  51% 5.04G/9.98G [00:44<00:42, 116MB/s][A
+Downloading (…)of-00002.safetensors:  51% 5.06G/9.98G [00:44<00:42, 115MB/s][A
+Downloading (…)of-00002.safetensors:  51% 5.09G/9.98G [00:44<00:42, 116MB/s][A
+Downloading (…)of-00002.safetensors:  51% 5.11G/9.98G [00:44<00:41, 116MB/s][A
+Downloading (…)of-00002.safetensors:  51% 5.13G/9.98G [00:45<00:41, 116MB/s][A
+Downloading (…)of-00002.safetensors:  52% 5.15G/9.98G [00:45<00:41, 116MB/s][A
+Downloading (…)of-00002.safetensors:  52% 5.17G/9.98G [00:45<00:41, 115MB/s][A
+Downloading (…)of-00002.safetensors:  52% 5.19G/9.98G [00:45<00:41, 115MB/s][A
+Downloading (…)of-00002.safetensors:  52% 5.21G/9.98G [00:45<00:41, 116MB/s][A
+Downloading (…)of-00002.safetensors:  52% 5.23G/9.98G [00:46<00:40, 116MB/s][A
+Downloading (…)of-00002.safetensors:  53% 5.25G/9.98G [00:46<00:40, 116MB/s][A
+Downloading (…)of-00002.safetensors:  53% 5.27G/9.98G [00:46<00:40, 117MB/s][A
+Downloading (…)of-00002.safetensors:  53% 5.30G/9.98G [00:46<00:40, 117MB/s][A
+Downloading (…)of-00002.safetensors:  53% 5.32G/9.98G [00:46<00:39, 117MB/s][A
+Downloading (…)of-00002.safetensors:  53% 5.34G/9.98G [00:46<00:39, 117MB/s][A
+Downloading (…)of-00002.safetensors:  54% 5.36G/9.98G [00:47<00:39, 117MB/s][A
+Downloading (…)of-00002.safetensors:  54% 5.38G/9.98G [00:47<00:39, 116MB/s][A
+Downloading (…)of-00002.safetensors:  54% 5.40G/9.98G [00:47<00:39, 115MB/s][A
+Downloading (…)of-00002.safetensors:  54% 5.42G/9.98G [00:47<00:39, 116MB/s][A
+Downloading (…)of-00002.safetensors:  55% 5.44G/9.98G [00:47<00:39, 116MB/s][A
+Downloading (…)of-00002.safetensors:  55% 5.46G/9.98G [00:48<00:38, 116MB/s][A
+Downloading (…)of-00002.safetensors:  55% 5.48G/9.98G [00:48<00:38, 116MB/s][A
+Downloading (…)of-00002.safetensors:  55% 5.51G/9.98G [00:48<00:38, 117MB/s][A
+Downloading (…)of-00002.safetensors:  55% 5.53G/9.98G [00:48<00:38, 115MB/s][A
+Downloading (…)of-00002.safetensors:  56% 5.55G/9.98G [00:48<00:38, 116MB/s][A
+Downloading (…)of-00002.safetensors:  56% 5.57G/9.98G [00:48<00:38, 116MB/s][A
+Downloading (…)of-00002.safetensors:  56% 5.59G/9.98G [00:49<00:37, 116MB/s][A
+Downloading (…)of-00002.safetensors:  56% 5.61G/9.98G [00:49<00:37, 116MB/s][A
+Downloading (…)of-00002.safetensors:  56% 5.63G/9.98G [00:49<00:37, 115MB/s][A
+Downloading (…)of-00002.safetensors:  57% 5.65G/9.98G [00:49<00:37, 115MB/s][A
+Downloading (…)of-00002.safetensors:  57% 5.67G/9.98G [00:49<00:37, 116MB/s][A
+Downloading (…)of-00002.safetensors:  57% 5.69G/9.98G [00:50<00:36, 116MB/s][A
+Downloading (…)of-00002.safetensors:  57% 5.71G/9.98G [00:50<00:36, 116MB/s][A
+Downloading (…)of-00002.safetensors:  57% 5.74G/9.98G [00:50<00:36, 115MB/s][A
+Downloading (…)of-00002.safetensors:  58% 5.76G/9.98G [00:50<00:36, 115MB/s][A
+Downloading (…)of-00002.safetensors:  58% 5.78G/9.98G [00:50<00:36, 115MB/s][A
+Downloading (…)of-00002.safetensors:  58% 5.80G/9.98G [00:51<00:48, 86.4MB/s][A
+Downloading (…)of-00002.safetensors:  58% 5.82G/9.98G [00:51<00:44, 93.5MB/s][A
+Downloading (…)of-00002.safetensors:  59% 5.84G/9.98G [00:51<00:41, 99.0MB/s][A
+Downloading (…)of-00002.safetensors:  59% 5.86G/9.98G [00:51<00:39, 104MB/s] [A
+Downloading (…)of-00002.safetensors:  59% 5.88G/9.98G [00:51<00:38, 107MB/s][A
+Downloading (…)of-00002.safetensors:  59% 5.90G/9.98G [00:52<00:37, 110MB/s][A
+Downloading (…)of-00002.safetensors:  59% 5.92G/9.98G [00:52<00:36, 112MB/s][A
+Downloading (…)of-00002.safetensors:  60% 5.95G/9.98G [00:52<00:35, 113MB/s][A
+Downloading (…)of-00002.safetensors:  60% 5.97G/9.98G [00:52<00:35, 113MB/s][A
+Downloading (…)of-00002.safetensors:  60% 5.99G/9.98G [00:52<00:35, 114MB/s][A
+Downloading (…)of-00002.safetensors:  60% 6.01G/9.98G [00:52<00:34, 115MB/s][A
+Downloading (…)of-00002.safetensors:  60% 6.03G/9.98G [00:53<00:34, 115MB/s][A
+Downloading (…)of-00002.safetensors:  61% 6.05G/9.98G [00:53<00:33, 116MB/s][A
+Downloading (…)of-00002.safetensors:  61% 6.07G/9.98G [00:53<00:33, 115MB/s][A
+Downloading (…)of-00002.safetensors:  61% 6.09G/9.98G [00:53<00:33, 116MB/s][A
+Downloading (…)of-00002.safetensors:  61% 6.11G/9.98G [00:53<00:33, 116MB/s][A
+Downloading (…)of-00002.safetensors:  61% 6.13G/9.98G [00:54<00:33, 116MB/s][A
+Downloading (…)of-00002.safetensors:  62% 6.16G/9.98G [00:54<00:32, 116MB/s][A
+Downloading (…)of-00002.safetensors:  62% 6.18G/9.98G [00:54<00:32, 117MB/s][A
+Downloading (…)of-00002.safetensors:  62% 6.20G/9.98G [00:54<00:32, 115MB/s][A
+Downloading (…)of-00002.safetensors:  62% 6.22G/9.98G [00:54<00:32, 115MB/s][A
+Downloading (…)of-00002.safetensors:  63% 6.24G/9.98G [00:54<00:32, 116MB/s][A
+Downloading (…)of-00002.safetensors:  63% 6.26G/9.98G [00:55<00:32, 116MB/s][A
+Downloading (…)of-00002.safetensors:  63% 6.28G/9.98G [00:55<00:31, 116MB/s][A
+Downloading (…)of-00002.safetensors:  63% 6.30G/9.98G [00:55<00:31, 115MB/s][A
+Downloading (…)of-00002.safetensors:  63% 6.32G/9.98G [00:55<00:31, 116MB/s][A
+Downloading (…)of-00002.safetensors:  64% 6.34G/9.98G [00:55<00:31, 116MB/s][A
+Downloading (…)of-00002.safetensors:  64% 6.36G/9.98G [00:56<00:31, 116MB/s][A
+Downloading (…)of-00002.safetensors:  64% 6.39G/9.98G [00:56<00:30, 116MB/s][A
+Downloading (…)of-00002.safetensors:  64% 6.41G/9.98G [00:56<00:30, 117MB/s][A
+Downloading (…)of-00002.safetensors:  64% 6.43G/9.98G [00:56<00:30, 116MB/s][A
+Downloading (…)of-00002.safetensors:  65% 6.45G/9.98G [00:56<00:30, 117MB/s][A
+Downloading (…)of-00002.safetensors:  65% 6.47G/9.98G [00:56<00:30, 117MB/s][A
+Downloading (…)of-00002.safetensors:  65% 6.49G/9.98G [00:57<00:29, 117MB/s][A
+Downloading (…)of-00002.safetensors:  65% 6.51G/9.98G [00:57<00:29, 117MB/s][A
+Downloading (…)of-00002.safetensors:  65% 6.53G/9.98G [00:57<00:29, 116MB/s][A
+Downloading (…)of-00002.safetensors:  66% 6.55G/9.98G [00:57<00:29, 116MB/s][A
+Downloading (…)of-00002.safetensors:  66% 6.57G/9.98G [00:57<00:29, 116MB/s][A
+Downloading (…)of-00002.safetensors:  66% 6.60G/9.98G [00:57<00:29, 116MB/s][A
+Downloading (…)of-00002.safetensors:  66% 6.62G/9.98G [00:58<00:28, 117MB/s][A
+Downloading (…)of-00002.safetensors:  67% 6.64G/9.98G [00:58<00:28, 117MB/s][A
+Downloading (…)of-00002.safetensors:  67% 6.66G/9.98G [00:58<00:28, 115MB/s][A
+Downloading (…)of-00002.safetensors:  67% 6.68G/9.98G [00:58<00:28, 115MB/s][A
+Downloading (…)of-00002.safetensors:  67% 6.70G/9.98G [00:58<00:28, 116MB/s][A
+Downloading (…)of-00002.safetensors:  67% 6.72G/9.98G [00:59<00:28, 116MB/s][A
+Downloading (…)of-00002.safetensors:  68% 6.74G/9.98G [00:59<00:27, 116MB/s][A
+Downloading (…)of-00002.safetensors:  68% 6.76G/9.98G [00:59<00:27, 116MB/s][A
+Downloading (…)of-00002.safetensors:  68% 6.78G/9.98G [00:59<00:27, 116MB/s][A
+Downloading (…)of-00002.safetensors:  68% 6.81G/9.98G [00:59<00:27, 116MB/s][A
+Downloading (…)of-00002.safetensors:  68% 6.83G/9.98G [00:59<00:27, 116MB/s][A
+Downloading (…)of-00002.safetensors:  69% 6.85G/9.98G [01:00<00:26, 116MB/s][A
+Downloading (…)of-00002.safetensors:  69% 6.87G/9.98G [01:00<00:26, 117MB/s][A
+Downloading (…)of-00002.safetensors:  69% 6.89G/9.98G [01:00<00:26, 115MB/s][A
+Downloading (…)of-00002.safetensors:  69% 6.91G/9.98G [01:00<00:26, 116MB/s][A
+Downloading (…)of-00002.safetensors:  69% 6.93G/9.98G [01:00<00:26, 116MB/s][A
+Downloading (…)of-00002.safetensors:  70% 6.95G/9.98G [01:01<00:25, 116MB/s][A
+Downloading (…)of-00002.safetensors:  70% 6.97G/9.98G [01:01<00:34, 86.0MB/s][A
+Downloading (…)of-00002.safetensors:  70% 6.99G/9.98G [01:01<00:31, 93.4MB/s][A
+Downloading (…)of-00002.safetensors:  70% 7.01G/9.98G [01:01<00:29, 99.4MB/s][A
+Downloading (…)of-00002.safetensors:  71% 7.04G/9.98G [01:01<00:28, 104MB/s] [A
+Downloading (…)of-00002.safetensors:  71% 7.06G/9.98G [01:02<00:27, 107MB/s][A
+Downloading (…)of-00002.safetensors:  71% 7.08G/9.98G [01:02<00:26, 110MB/s][A
+Downloading (…)of-00002.safetensors:  71% 7.10G/9.98G [01:02<00:26, 110MB/s][A
+Downloading (…)of-00002.safetensors:  71% 7.12G/9.98G [01:02<00:25, 112MB/s][A
+Downloading (…)of-00002.safetensors:  72% 7.14G/9.98G [01:02<00:25, 113MB/s][A
+Downloading (…)of-00002.safetensors:  72% 7.16G/9.98G [01:03<00:24, 114MB/s][A
+Downloading (…)of-00002.safetensors:  72% 7.18G/9.98G [01:03<00:24, 115MB/s][A
+Downloading (…)of-00002.safetensors:  72% 7.20G/9.98G [01:03<00:24, 114MB/s][A
+Downloading (…)of-00002.safetensors:  72% 7.22G/9.98G [01:03<00:23, 115MB/s][A
+Downloading (…)of-00002.safetensors:  73% 7.25G/9.98G [01:03<00:23, 116MB/s][A
+Downloading (…)of-00002.safetensors:  73% 7.27G/9.98G [01:03<00:23, 116MB/s][A
+Downloading (…)of-00002.safetensors:  73% 7.29G/9.98G [01:04<00:23, 116MB/s][A
+Downloading (…)of-00002.safetensors:  73% 7.31G/9.98G [01:04<00:22, 116MB/s][A
+Downloading (…)of-00002.safetensors:  73% 7.33G/9.98G [01:04<00:23, 115MB/s][A
+Downloading (…)of-00002.safetensors:  74% 7.35G/9.98G [01:04<00:22, 115MB/s][A
+Downloading (…)of-00002.safetensors:  74% 7.37G/9.98G [01:04<00:22, 116MB/s][A
+Downloading (…)of-00002.safetensors:  74% 7.39G/9.98G [01:05<00:22, 116MB/s][A
+Downloading (…)of-00002.safetensors:  74% 7.41G/9.98G [01:05<00:22, 116MB/s][A
+Downloading (…)of-00002.safetensors:  75% 7.43G/9.98G [01:05<00:22, 115MB/s][A
+Downloading (…)of-00002.safetensors:  75% 7.46G/9.98G [01:05<00:21, 116MB/s][A
+Downloading (…)of-00002.safetensors:  75% 7.48G/9.98G [01:05<00:21, 116MB/s][A
+Downloading (…)of-00002.safetensors:  75% 7.50G/9.98G [01:05<00:21, 116MB/s][A
+Downloading (…)of-00002.safetensors:  75% 7.52G/9.98G [01:06<00:21, 116MB/s][A
+Downloading (…)of-00002.safetensors:  76% 7.54G/9.98G [01:06<00:20, 117MB/s][A
+Downloading (…)of-00002.safetensors:  76% 7.56G/9.98G [01:06<00:20, 116MB/s][A
+Downloading (…)of-00002.safetensors:  76% 7.58G/9.98G [01:06<00:20, 116MB/s][A
+Downloading (…)of-00002.safetensors:  76% 7.60G/9.98G [01:06<00:20, 117MB/s][A
+Downloading (…)of-00002.safetensors:  76% 7.62G/9.98G [01:07<00:20, 117MB/s][A
+Downloading (…)of-00002.safetensors:  77% 7.64G/9.98G [01:07<00:20, 116MB/s][A
+Downloading (…)of-00002.safetensors:  77% 7.67G/9.98G [01:07<00:20, 115MB/s][A
+Downloading (…)of-00002.safetensors:  77% 7.69G/9.98G [01:07<00:19, 116MB/s][A
+Downloading (…)of-00002.safetensors:  77% 7.71G/9.98G [01:07<00:19, 116MB/s][A
+Downloading (…)of-00002.safetensors:  77% 7.73G/9.98G [01:07<00:19, 116MB/s][A
+Downloading (…)of-00002.safetensors:  78% 7.75G/9.98G [01:08<00:19, 116MB/s][A
+Downloading (…)of-00002.safetensors:  78% 7.77G/9.98G [01:08<00:18, 116MB/s][A
+Downloading (…)of-00002.safetensors:  78% 7.79G/9.98G [01:08<00:19, 115MB/s][A
+Downloading (…)of-00002.safetensors:  78% 7.81G/9.98G [01:08<00:18, 116MB/s][A
+Downloading (…)of-00002.safetensors:  79% 7.83G/9.98G [01:08<00:18, 116MB/s][A
+Downloading (…)of-00002.safetensors:  79% 7.85G/9.98G [01:09<00:18, 116MB/s][A
+Downloading (…)of-00002.safetensors:  79% 7.87G/9.98G [01:09<00:18, 116MB/s][A
+Downloading (…)of-00002.safetensors:  79% 7.90G/9.98G [01:09<00:17, 116MB/s][A
+Downloading (…)of-00002.safetensors:  79% 7.92G/9.98G [01:09<00:17, 115MB/s][A
+Downloading (…)of-00002.safetensors:  80% 7.94G/9.98G [01:09<00:17, 116MB/s][A
+Downloading (…)of-00002.safetensors:  80% 7.96G/9.98G [01:09<00:17, 116MB/s][A
+Downloading (…)of-00002.safetensors:  80% 7.98G/9.98G [01:10<00:17, 116MB/s][A
+Downloading (…)of-00002.safetensors:  80% 8.00G/9.98G [01:10<00:16, 116MB/s][A
+Downloading (…)of-00002.safetensors:  80% 8.02G/9.98G [01:10<00:17, 115MB/s][A
+Downloading (…)of-00002.safetensors:  81% 8.04G/9.98G [01:10<00:16, 115MB/s][A
+Downloading (…)of-00002.safetensors:  81% 8.06G/9.98G [01:10<00:16, 116MB/s][A
+Downloading (…)of-00002.safetensors:  81% 8.08G/9.98G [01:11<00:16, 116MB/s][A
+Downloading (…)of-00002.safetensors:  81% 8.11G/9.98G [01:11<00:16, 116MB/s][A
+Downloading (…)of-00002.safetensors:  81% 8.13G/9.98G [01:11<00:21, 86.7MB/s][A
+Downloading (…)of-00002.safetensors:  82% 8.15G/9.98G [01:11<00:19, 93.7MB/s][A
+Downloading (…)of-00002.safetensors:  82% 8.17G/9.98G [01:11<00:18, 99.6MB/s][A
+Downloading (…)of-00002.safetensors:  82% 8.19G/9.98G [01:12<00:17, 104MB/s] [A
+Downloading (…)of-00002.safetensors:  82% 8.21G/9.98G [01:12<00:16, 107MB/s][A
+Downloading (…)of-00002.safetensors:  83% 8.23G/9.98G [01:12<00:16, 109MB/s][A
+Downloading (…)of-00002.safetensors:  83% 8.25G/9.98G [01:12<00:15, 111MB/s][A
+Downloading (…)of-00002.safetensors:  83% 8.27G/9.98G [01:12<00:15, 113MB/s][A
+Downloading (…)of-00002.safetensors:  83% 8.29G/9.98G [01:13<00:14, 114MB/s][A
+Downloading (…)of-00002.safetensors:  83% 8.32G/9.98G [01:13<00:14, 114MB/s][A
+Downloading (…)of-00002.safetensors:  84% 8.34G/9.98G [01:13<00:14, 114MB/s][A
+Downloading (…)of-00002.safetensors:  84% 8.36G/9.98G [01:13<00:14, 115MB/s][A
+Downloading (…)of-00002.safetensors:  84% 8.38G/9.98G [01:13<00:13, 115MB/s][A
+Downloading (…)of-00002.safetensors:  84% 8.40G/9.98G [01:13<00:13, 116MB/s][A
+Downloading (…)of-00002.safetensors:  84% 8.42G/9.98G [01:14<00:13, 116MB/s][A
+Downloading (…)of-00002.safetensors:  85% 8.44G/9.98G [01:14<00:13, 116MB/s][A
+Downloading (…)of-00002.safetensors:  85% 8.46G/9.98G [01:14<00:13, 115MB/s][A
+Downloading (…)of-00002.safetensors:  85% 8.48G/9.98G [01:14<00:12, 116MB/s][A
+Downloading (…)of-00002.safetensors:  85% 8.50G/9.98G [01:14<00:12, 116MB/s][A
+Downloading (…)of-00002.safetensors:  85% 8.52G/9.98G [01:15<00:12, 116MB/s][A
+Downloading (…)of-00002.safetensors:  86% 8.55G/9.98G [01:15<00:12, 116MB/s][A
+Downloading (…)of-00002.safetensors:  86% 8.57G/9.98G [01:15<00:12, 116MB/s][A
+Downloading (…)of-00002.safetensors:  86% 8.59G/9.98G [01:15<00:12, 115MB/s][A
+Downloading (…)of-00002.safetensors:  86% 8.61G/9.98G [01:15<00:15, 89.1MB/s][A
+Downloading (…)of-00002.safetensors:  87% 8.63G/9.98G [01:16<00:14, 96.0MB/s][A
+Downloading (…)of-00002.safetensors:  87% 8.65G/9.98G [01:16<00:13, 101MB/s] [A
+Downloading (…)of-00002.safetensors:  87% 8.67G/9.98G [01:16<00:12, 105MB/s][A
+Downloading (…)of-00002.safetensors:  87% 8.69G/9.98G [01:16<00:11, 108MB/s][A
+Downloading (…)of-00002.safetensors:  87% 8.71G/9.98G [01:16<00:11, 111MB/s][A
+Downloading (…)of-00002.safetensors:  88% 8.73G/9.98G [01:17<00:11, 113MB/s][A
+Downloading (…)of-00002.safetensors:  88% 8.76G/9.98G [01:17<00:10, 113MB/s][A
+Downloading (…)of-00002.safetensors:  88% 8.78G/9.98G [01:17<00:10, 114MB/s][A
+Downloading (…)of-00002.safetensors:  88% 8.80G/9.98G [01:17<00:10, 111MB/s][A
+Downloading (…)of-00002.safetensors:  88% 8.82G/9.98G [01:17<00:10, 113MB/s][A
+Downloading (…)of-00002.safetensors:  89% 8.84G/9.98G [01:17<00:09, 114MB/s][A
+Downloading (…)of-00002.safetensors:  89% 8.86G/9.98G [01:18<00:09, 115MB/s][A
+Downloading (…)of-00002.safetensors:  89% 8.88G/9.98G [01:18<00:09, 115MB/s][A
+Downloading (…)of-00002.safetensors:  89% 8.90G/9.98G [01:18<00:09, 113MB/s][A
+Downloading (…)of-00002.safetensors:  89% 8.92G/9.98G [01:18<00:09, 112MB/s][A
+Downloading (…)of-00002.safetensors:  90% 8.94G/9.98G [01:18<00:08, 115MB/s][A
+Downloading (…)of-00002.safetensors:  90% 8.97G/9.98G [01:19<00:08, 116MB/s][A
+Downloading (…)of-00002.safetensors:  90% 8.99G/9.98G [01:19<00:08, 116MB/s][A
+Downloading (…)of-00002.safetensors:  90% 9.01G/9.98G [01:19<00:08, 113MB/s][A
+Downloading (…)of-00002.safetensors:  90% 9.03G/9.98G [01:19<00:08, 114MB/s][A
+Downloading (…)of-00002.safetensors:  91% 9.05G/9.98G [01:19<00:08, 115MB/s][A
+Downloading (…)of-00002.safetensors:  91% 9.07G/9.98G [01:19<00:07, 115MB/s][A
+Downloading (…)of-00002.safetensors:  91% 9.09G/9.98G [01:20<00:07, 116MB/s][A
+Downloading (…)of-00002.safetensors:  91% 9.11G/9.98G [01:20<00:07, 116MB/s][A
+Downloading (…)of-00002.safetensors:  92% 9.13G/9.98G [01:20<00:07, 113MB/s][A
+Downloading (…)of-00002.safetensors:  92% 9.15G/9.98G [01:20<00:07, 114MB/s][A
+Downloading (…)of-00002.safetensors:  92% 9.18G/9.98G [01:20<00:06, 115MB/s][A
+Downloading (…)of-00002.safetensors:  92% 9.20G/9.98G [01:21<00:06, 116MB/s][A
+Downloading (…)of-00002.safetensors:  92% 9.22G/9.98G [01:21<00:06, 116MB/s][A
+Downloading (…)of-00002.safetensors:  93% 9.24G/9.98G [01:21<00:06, 116MB/s][A
+Downloading (…)of-00002.safetensors:  93% 9.26G/9.98G [01:21<00:08, 86.2MB/s][A
+Downloading (…)of-00002.safetensors:  93% 9.28G/9.98G [01:21<00:07, 93.2MB/s][A
+Downloading (…)of-00002.safetensors:  93% 9.30G/9.98G [01:22<00:06, 99.0MB/s][A
+Downloading (…)of-00002.safetensors:  93% 9.32G/9.98G [01:22<00:06, 104MB/s] [A
+Downloading (…)of-00002.safetensors:  94% 9.34G/9.98G [01:22<00:06, 105MB/s][A
+Downloading (…)of-00002.safetensors:  94% 9.36G/9.98G [01:22<00:05, 109MB/s][A
+Downloading (…)of-00002.safetensors:  94% 9.38G/9.98G [01:22<00:05, 111MB/s][A
+Downloading (…)of-00002.safetensors:  94% 9.41G/9.98G [01:23<00:05, 113MB/s][A
+Downloading (…)of-00002.safetensors:  94% 9.43G/9.98G [01:23<00:04, 113MB/s][A
+Downloading (…)of-00002.safetensors:  95% 9.45G/9.98G [01:23<00:04, 112MB/s][A
+Downloading (…)of-00002.safetensors:  95% 9.47G/9.98G [01:23<00:04, 114MB/s][A
+Downloading (…)of-00002.safetensors:  95% 9.49G/9.98G [01:23<00:04, 115MB/s][A
+Downloading (…)of-00002.safetensors:  95% 9.51G/9.98G [01:23<00:04, 115MB/s][A
+Downloading (…)of-00002.safetensors:  96% 9.53G/9.98G [01:24<00:03, 116MB/s][A
+Downloading (…)of-00002.safetensors:  96% 9.55G/9.98G [01:24<00:03, 116MB/s][A
+Downloading (…)of-00002.safetensors:  96% 9.57G/9.98G [01:24<00:03, 114MB/s][A
+Downloading (…)of-00002.safetensors:  96% 9.59G/9.98G [01:24<00:03, 115MB/s][A
+Downloading (…)of-00002.safetensors:  96% 9.62G/9.98G [01:24<00:03, 115MB/s][A
+Downloading (…)of-00002.safetensors:  97% 9.64G/9.98G [01:25<00:02, 116MB/s][A
+Downloading (…)of-00002.safetensors:  97% 9.66G/9.98G [01:25<00:02, 116MB/s][A
+Downloading (…)of-00002.safetensors:  97% 9.68G/9.98G [01:25<00:02, 114MB/s][A
+Downloading (…)of-00002.safetensors:  97% 9.70G/9.98G [01:25<00:02, 115MB/s][A
+Downloading (…)of-00002.safetensors:  97% 9.72G/9.98G [01:25<00:02, 116MB/s][A
+Downloading (…)of-00002.safetensors:  98% 9.74G/9.98G [01:25<00:02, 116MB/s][A
+Downloading (…)of-00002.safetensors:  98% 9.76G/9.98G [01:26<00:01, 116MB/s][A
+Downloading (…)of-00002.safetensors:  98% 9.78G/9.98G [01:26<00:01, 116MB/s][A
+Downloading (…)of-00002.safetensors:  98% 9.80G/9.98G [01:26<00:01, 117MB/s][A
+Downloading (…)of-00002.safetensors:  98% 9.83G/9.98G [01:26<00:01, 117MB/s][A
+Downloading (…)of-00002.safetensors:  99% 9.85G/9.98G [01:26<00:01, 117MB/s][A
+Downloading (…)of-00002.safetensors:  99% 9.87G/9.98G [01:27<00:00, 117MB/s][A
+Downloading (…)of-00002.safetensors:  99% 9.89G/9.98G [01:27<00:00, 117MB/s][A
+Downloading (…)of-00002.safetensors:  99% 9.91G/9.98G [01:27<00:00, 115MB/s][A
+Downloading (…)of-00002.safetensors: 100% 9.93G/9.98G [01:27<00:00, 116MB/s][A
+Downloading (…)of-00002.safetensors: 100% 9.95G/9.98G [01:27<00:00, 116MB/s][A
+Downloading (…)of-00002.safetensors: 100% 9.97G/9.98G [01:27<00:00, 116MB/s][ADownloading (…)of-00002.safetensors: 100% 9.98G/9.98G [01:28<00:00, 113MB/s]
+Downloading shards:  50% 1/2 [01:28<01:28, 88.13s/it]Downloading shards:  50% 1/2 [01:28<01:28, 88.11s/it]Downloading shards:  50% 1/2 [01:28<01:28, 88.13s/it]Downloading shards:  50% 1/2 [01:28<01:28, 88.13s/it]Downloading shards:  50% 1/2 [01:28<01:28, 88.15s/it]Downloading shards:  50% 1/2 [01:28<01:28, 88.17s/it]Downloading shards:  50% 1/2 [01:28<01:28, 88.13s/it]Downloading shards:  50% 1/2 [01:28<01:28, 88.13s/it]
+Downloading (…)of-00002.safetensors:   0% 0.00/3.50G [00:00<?, ?B/s][A
+Downloading (…)of-00002.safetensors:   1% 21.0M/3.50G [00:00<00:32, 108MB/s][A
+Downloading (…)of-00002.safetensors:   1% 41.9M/3.50G [00:00<00:31, 111MB/s][A
+Downloading (…)of-00002.safetensors:   2% 62.9M/3.50G [00:00<00:30, 114MB/s][A
+Downloading (…)of-00002.safetensors:   2% 83.9M/3.50G [00:00<00:29, 115MB/s][A
+Downloading (…)of-00002.safetensors:   3% 105M/3.50G [00:00<00:29, 116MB/s] [A
+Downloading (…)of-00002.safetensors:   4% 126M/3.50G [00:01<00:29, 116MB/s][A
+Downloading (…)of-00002.safetensors:   4% 147M/3.50G [00:01<00:28, 116MB/s][A
+Downloading (…)of-00002.safetensors:   5% 168M/3.50G [00:01<00:29, 114MB/s][A
+Downloading (…)of-00002.safetensors:   5% 189M/3.50G [00:01<00:28, 115MB/s][A
+Downloading (…)of-00002.safetensors:   6% 210M/3.50G [00:01<00:28, 116MB/s][A
+Downloading (…)of-00002.safetensors:   7% 231M/3.50G [00:02<00:28, 116MB/s][A
+Downloading (…)of-00002.safetensors:   7% 252M/3.50G [00:02<00:27, 116MB/s][A
+Downloading (…)of-00002.safetensors:   8% 273M/3.50G [00:02<00:28, 115MB/s][A
+Downloading (…)of-00002.safetensors:   8% 294M/3.50G [00:02<00:27, 116MB/s][A
+Downloading (…)of-00002.safetensors:   9% 315M/3.50G [00:02<00:27, 116MB/s][A
+Downloading (…)of-00002.safetensors:  10% 336M/3.50G [00:02<00:27, 116MB/s][A
+Downloading (…)of-00002.safetensors:  10% 357M/3.50G [00:03<00:27, 116MB/s][A
+Downloading (…)of-00002.safetensors:  11% 377M/3.50G [00:03<00:26, 117MB/s][A
+Downloading (…)of-00002.safetensors:  11% 398M/3.50G [00:03<00:26, 117MB/s][A
+Downloading (…)of-00002.safetensors:  12% 419M/3.50G [00:03<00:26, 117MB/s][A
+Downloading (…)of-00002.safetensors:  13% 440M/3.50G [00:03<00:26, 117MB/s][A
+Downloading (…)of-00002.safetensors:  13% 461M/3.50G [00:03<00:26, 117MB/s][A
+Downloading (…)of-00002.safetensors:  14% 482M/3.50G [00:04<00:26, 116MB/s][A
+Downloading (…)of-00002.safetensors:  14% 503M/3.50G [00:04<00:26, 114MB/s][A
+Downloading (…)of-00002.safetensors:  15% 524M/3.50G [00:04<00:25, 115MB/s][A
+Downloading (…)of-00002.safetensors:  16% 545M/3.50G [00:04<00:25, 116MB/s][A
+Downloading (…)of-00002.safetensors:  16% 566M/3.50G [00:04<00:25, 116MB/s][A
+Downloading (…)of-00002.safetensors:  17% 587M/3.50G [00:05<00:25, 116MB/s][A
+Downloading (…)of-00002.safetensors:  17% 608M/3.50G [00:05<00:24, 116MB/s][A
+Downloading (…)of-00002.safetensors:  18% 629M/3.50G [00:05<00:24, 115MB/s][A
+Downloading (…)of-00002.safetensors:  19% 650M/3.50G [00:05<00:24, 116MB/s][A
+Downloading (…)of-00002.safetensors:  19% 671M/3.50G [00:05<00:24, 116MB/s][A
+Downloading (…)of-00002.safetensors:  20% 692M/3.50G [00:05<00:24, 116MB/s][A
+Downloading (…)of-00002.safetensors:  20% 713M/3.50G [00:06<00:24, 115MB/s][A
+Downloading (…)of-00002.safetensors:  21% 734M/3.50G [00:06<00:24, 114MB/s][A
+Downloading (…)of-00002.safetensors:  22% 755M/3.50G [00:06<00:23, 115MB/s][A
+Downloading (…)of-00002.safetensors:  22% 776M/3.50G [00:06<00:23, 115MB/s][A
+Downloading (…)of-00002.safetensors:  23% 797M/3.50G [00:06<00:23, 116MB/s][A
+Downloading (…)of-00002.safetensors:  23% 818M/3.50G [00:07<00:23, 116MB/s][A
+Downloading (…)of-00002.safetensors:  24% 839M/3.50G [00:07<00:22, 116MB/s][A
+Downloading (…)of-00002.safetensors:  25% 860M/3.50G [00:07<00:22, 115MB/s][A
+Downloading (…)of-00002.safetensors:  25% 881M/3.50G [00:07<00:22, 116MB/s][A
+Downloading (…)of-00002.safetensors:  26% 902M/3.50G [00:07<00:22, 116MB/s][A
+Downloading (…)of-00002.safetensors:  26% 923M/3.50G [00:07<00:22, 116MB/s][A
+Downloading (…)of-00002.safetensors:  27% 944M/3.50G [00:08<00:21, 116MB/s][A
+Downloading (…)of-00002.safetensors:  28% 965M/3.50G [00:08<00:21, 116MB/s][A
+Downloading (…)of-00002.safetensors:  28% 986M/3.50G [00:08<00:21, 116MB/s][A
+Downloading (…)of-00002.safetensors:  29% 1.01G/3.50G [00:08<00:21, 117MB/s][A
+Downloading (…)of-00002.safetensors:  29% 1.03G/3.50G [00:08<00:21, 117MB/s][A
+Downloading (…)of-00002.safetensors:  30% 1.05G/3.50G [00:09<00:21, 117MB/s][A
+Downloading (…)of-00002.safetensors:  31% 1.07G/3.50G [00:09<00:20, 117MB/s][A
+Downloading (…)of-00002.safetensors:  31% 1.09G/3.50G [00:09<00:20, 115MB/s][A
+Downloading (…)of-00002.safetensors:  32% 1.11G/3.50G [00:09<00:20, 115MB/s][A
+Downloading (…)of-00002.safetensors:  32% 1.13G/3.50G [00:09<00:20, 116MB/s][A
+Downloading (…)of-00002.safetensors:  33% 1.15G/3.50G [00:09<00:20, 116MB/s][A
+Downloading (…)of-00002.safetensors:  34% 1.17G/3.50G [00:10<00:27, 85.0MB/s][A
+Downloading (…)of-00002.safetensors:  34% 1.20G/3.50G [00:10<00:24, 92.6MB/s][A
+Downloading (…)of-00002.safetensors:  35% 1.22G/3.50G [00:10<00:23, 98.8MB/s][A
+Downloading (…)of-00002.safetensors:  35% 1.24G/3.50G [00:10<00:21, 104MB/s] [A
+Downloading (…)of-00002.safetensors:  36% 1.26G/3.50G [00:11<00:20, 107MB/s][A
+Downloading (…)of-00002.safetensors:  37% 1.28G/3.50G [00:11<00:20, 110MB/s][A
+Downloading (…)of-00002.safetensors:  37% 1.30G/3.50G [00:11<00:19, 111MB/s][A
+Downloading (…)of-00002.safetensors:  38% 1.32G/3.50G [00:11<00:19, 112MB/s][A
+Downloading (…)of-00002.safetensors:  38% 1.34G/3.50G [00:11<00:18, 114MB/s][A
+Downloading (…)of-00002.safetensors:  39% 1.36G/3.50G [00:11<00:18, 115MB/s][A
+Downloading (…)of-00002.safetensors:  40% 1.38G/3.50G [00:12<00:18, 115MB/s][A
+Downloading (…)of-00002.safetensors:  40% 1.41G/3.50G [00:12<00:18, 115MB/s][A
+Downloading (…)of-00002.safetensors:  41% 1.43G/3.50G [00:12<00:18, 115MB/s][A
+Downloading (…)of-00002.safetensors:  41% 1.45G/3.50G [00:12<00:17, 116MB/s][A
+Downloading (…)of-00002.safetensors:  42% 1.47G/3.50G [00:12<00:17, 116MB/s][A
+Downloading (…)of-00002.safetensors:  43% 1.49G/3.50G [00:13<00:17, 116MB/s][A
+Downloading (…)of-00002.safetensors:  43% 1.51G/3.50G [00:13<00:17, 116MB/s][A
+Downloading (…)of-00002.safetensors:  44% 1.53G/3.50G [00:13<00:16, 117MB/s][A
+Downloading (…)of-00002.safetensors:  44% 1.55G/3.50G [00:13<00:16, 117MB/s][A
+Downloading (…)of-00002.safetensors:  45% 1.57G/3.50G [00:13<00:16, 117MB/s][A
+Downloading (…)of-00002.safetensors:  46% 1.59G/3.50G [00:13<00:16, 117MB/s][A
+Downloading (…)of-00002.safetensors:  46% 1.61G/3.50G [00:14<00:16, 116MB/s][A
+Downloading (…)of-00002.safetensors:  47% 1.64G/3.50G [00:14<00:16, 115MB/s][A
+Downloading (…)of-00002.safetensors:  47% 1.66G/3.50G [00:14<00:15, 116MB/s][A
+Downloading (…)of-00002.safetensors:  48% 1.68G/3.50G [00:14<00:15, 116MB/s][A
+Downloading (…)of-00002.safetensors:  49% 1.70G/3.50G [00:14<00:15, 116MB/s][A
+Downloading (…)of-00002.safetensors:  49% 1.72G/3.50G [00:15<00:15, 116MB/s][A
+Downloading (…)of-00002.safetensors:  50% 1.74G/3.50G [00:15<00:15, 117MB/s][A
+Downloading (…)of-00002.safetensors:  50% 1.76G/3.50G [00:15<00:15, 115MB/s][A
+Downloading (…)of-00002.safetensors:  51% 1.78G/3.50G [00:15<00:14, 115MB/s][A
+Downloading (…)of-00002.safetensors:  52% 1.80G/3.50G [00:15<00:14, 114MB/s][A
+Downloading (…)of-00002.safetensors:  52% 1.82G/3.50G [00:15<00:14, 116MB/s][A
+Downloading (…)of-00002.safetensors:  53% 1.85G/3.50G [00:16<00:14, 117MB/s][A
+Downloading (…)of-00002.safetensors:  53% 1.87G/3.50G [00:16<00:14, 114MB/s][A
+Downloading (…)of-00002.safetensors:  54% 1.89G/3.50G [00:16<00:14, 115MB/s][A
+Downloading (…)of-00002.safetensors:  55% 1.91G/3.50G [00:16<00:13, 116MB/s][A
+Downloading (…)of-00002.safetensors:  55% 1.93G/3.50G [00:16<00:13, 116MB/s][A
+Downloading (…)of-00002.safetensors:  56% 1.95G/3.50G [00:17<00:13, 116MB/s][A
+Downloading (…)of-00002.safetensors:  56% 1.97G/3.50G [00:17<00:13, 116MB/s][A
+Downloading (…)of-00002.safetensors:  57% 1.99G/3.50G [00:17<00:13, 115MB/s][A
+Downloading (…)of-00002.safetensors:  58% 2.01G/3.50G [00:17<00:12, 116MB/s][A
+Downloading (…)of-00002.safetensors:  58% 2.03G/3.50G [00:17<00:12, 116MB/s][A
+Downloading (…)of-00002.safetensors:  59% 2.06G/3.50G [00:17<00:12, 116MB/s][A
+Downloading (…)of-00002.safetensors:  59% 2.08G/3.50G [00:18<00:12, 116MB/s][A
+Downloading (…)of-00002.safetensors:  60% 2.10G/3.50G [00:18<00:12, 116MB/s][A
+Downloading (…)of-00002.safetensors:  61% 2.12G/3.50G [00:18<00:11, 117MB/s][A
+Downloading (…)of-00002.safetensors:  61% 2.14G/3.50G [00:18<00:11, 117MB/s][A
+Downloading (…)of-00002.safetensors:  62% 2.16G/3.50G [00:18<00:11, 117MB/s][A
+Downloading (…)of-00002.safetensors:  62% 2.18G/3.50G [00:19<00:11, 117MB/s][A
+Downloading (…)of-00002.safetensors:  63% 2.20G/3.50G [00:19<00:11, 116MB/s][A
+Downloading (…)of-00002.safetensors:  64% 2.22G/3.50G [00:19<00:11, 115MB/s][A
+Downloading (…)of-00002.safetensors:  64% 2.24G/3.50G [00:19<00:10, 115MB/s][A
+Downloading (…)of-00002.safetensors:  65% 2.26G/3.50G [00:19<00:10, 116MB/s][A
+Downloading (…)of-00002.safetensors:  65% 2.29G/3.50G [00:19<00:10, 116MB/s][A
+Downloading (…)of-00002.safetensors:  66% 2.31G/3.50G [00:20<00:10, 116MB/s][A
+Downloading (…)of-00002.safetensors:  67% 2.33G/3.50G [00:20<00:13, 86.8MB/s][A
+Downloading (…)of-00002.safetensors:  67% 2.35G/3.50G [00:20<00:12, 93.8MB/s][A
+Downloading (…)of-00002.safetensors:  68% 2.37G/3.50G [00:20<00:11, 99.8MB/s][A
+Downloading (…)of-00002.safetensors:  68% 2.39G/3.50G [00:21<00:10, 104MB/s] [A
+Downloading (…)of-00002.safetensors:  69% 2.41G/3.50G [00:21<00:10, 108MB/s][A
+Downloading (…)of-00002.safetensors:  69% 2.43G/3.50G [00:21<00:09, 109MB/s][A
+Downloading (…)of-00002.safetensors:  70% 2.45G/3.50G [00:21<00:09, 111MB/s][A
+Downloading (…)of-00002.safetensors:  71% 2.47G/3.50G [00:21<00:09, 113MB/s][A
+Downloading (…)of-00002.safetensors:  71% 2.50G/3.50G [00:21<00:08, 114MB/s][A
+Downloading (…)of-00002.safetensors:  72% 2.52G/3.50G [00:22<00:08, 115MB/s][A
+Downloading (…)of-00002.safetensors:  72% 2.54G/3.50G [00:22<00:08, 114MB/s][A
+Downloading (…)of-00002.safetensors:  73% 2.56G/3.50G [00:22<00:08, 115MB/s][A
+Downloading (…)of-00002.safetensors:  74% 2.58G/3.50G [00:22<00:07, 115MB/s][A
+Downloading (…)of-00002.safetensors:  74% 2.60G/3.50G [00:22<00:07, 116MB/s][A
+Downloading (…)of-00002.safetensors:  75% 2.62G/3.50G [00:23<00:07, 116MB/s][A
+Downloading (…)of-00002.safetensors:  75% 2.64G/3.50G [00:23<00:07, 116MB/s][A
+Downloading (…)of-00002.safetensors:  76% 2.66G/3.50G [00:23<00:07, 117MB/s][A
+Downloading (…)of-00002.safetensors:  77% 2.68G/3.50G [00:23<00:06, 117MB/s][A
+Downloading (…)of-00002.safetensors:  77% 2.71G/3.50G [00:23<00:06, 117MB/s][A
+Downloading (…)of-00002.safetensors:  78% 2.73G/3.50G [00:23<00:06, 117MB/s][A
+Downloading (…)of-00002.safetensors:  78% 2.75G/3.50G [00:24<00:06, 116MB/s][A
+Downloading (…)of-00002.safetensors:  79% 2.77G/3.50G [00:24<00:06, 115MB/s][A
+Downloading (…)of-00002.safetensors:  80% 2.79G/3.50G [00:24<00:06, 116MB/s][A
+Downloading (…)of-00002.safetensors:  80% 2.81G/3.50G [00:24<00:05, 116MB/s][A
+Downloading (…)of-00002.safetensors:  81% 2.83G/3.50G [00:24<00:05, 116MB/s][A
+Downloading (…)of-00002.safetensors:  81% 2.85G/3.50G [00:25<00:05, 116MB/s][A
+Downloading (…)of-00002.safetensors:  82% 2.87G/3.50G [00:25<00:05, 116MB/s][A
+Downloading (…)of-00002.safetensors:  83% 2.89G/3.50G [00:25<00:05, 115MB/s][A
+Downloading (…)of-00002.safetensors:  83% 2.92G/3.50G [00:25<00:05, 116MB/s][A
+Downloading (…)of-00002.safetensors:  84% 2.94G/3.50G [00:25<00:04, 116MB/s][A
+Downloading (…)of-00002.safetensors:  84% 2.96G/3.50G [00:25<00:04, 116MB/s][A
+Downloading (…)of-00002.safetensors:  85% 2.98G/3.50G [00:26<00:04, 116MB/s][A
+Downloading (…)of-00002.safetensors:  86% 3.00G/3.50G [00:26<00:04, 115MB/s][A
+Downloading (…)of-00002.safetensors:  86% 3.02G/3.50G [00:26<00:04, 116MB/s][A
+Downloading (…)of-00002.safetensors:  87% 3.04G/3.50G [00:26<00:03, 116MB/s][A
+Downloading (…)of-00002.safetensors:  87% 3.06G/3.50G [00:26<00:03, 116MB/s][A
+Downloading (…)of-00002.safetensors:  88% 3.08G/3.50G [00:27<00:03, 116MB/s][A
+Downloading (…)of-00002.safetensors:  89% 3.10G/3.50G [00:27<00:03, 116MB/s][A
+Downloading (…)of-00002.safetensors:  89% 3.12G/3.50G [00:27<00:03, 115MB/s][A
+Downloading (…)of-00002.safetensors:  90% 3.15G/3.50G [00:27<00:03, 115MB/s][A
+Downloading (…)of-00002.safetensors:  90% 3.17G/3.50G [00:27<00:02, 115MB/s][A
+Downloading (…)of-00002.safetensors:  91% 3.19G/3.50G [00:27<00:02, 116MB/s][A
+Downloading (…)of-00002.safetensors:  92% 3.21G/3.50G [00:28<00:02, 116MB/s][A
+Downloading (…)of-00002.safetensors:  92% 3.23G/3.50G [00:28<00:02, 116MB/s][A
+Downloading (…)of-00002.safetensors:  93% 3.25G/3.50G [00:28<00:02, 116MB/s][A
+Downloading (…)of-00002.safetensors:  93% 3.27G/3.50G [00:28<00:01, 117MB/s][A
+Downloading (…)of-00002.safetensors:  94% 3.29G/3.50G [00:28<00:01, 117MB/s][A
+Downloading (…)of-00002.safetensors:  95% 3.31G/3.50G [00:29<00:01, 117MB/s][A
+Downloading (…)of-00002.safetensors:  95% 3.33G/3.50G [00:29<00:01, 117MB/s][A
+Downloading (…)of-00002.safetensors:  96% 3.36G/3.50G [00:29<00:01, 115MB/s][A
+Downloading (…)of-00002.safetensors:  96% 3.38G/3.50G [00:29<00:01, 116MB/s][A
+Downloading (…)of-00002.safetensors:  97% 3.40G/3.50G [00:29<00:00, 116MB/s][A
+Downloading (…)of-00002.safetensors:  98% 3.42G/3.50G [00:29<00:00, 116MB/s][A
+Downloading (…)of-00002.safetensors:  98% 3.44G/3.50G [00:30<00:00, 116MB/s][A
+Downloading (…)of-00002.safetensors:  99% 3.46G/3.50G [00:30<00:00, 117MB/s][A
+Downloading (…)of-00002.safetensors:  99% 3.48G/3.50G [00:30<00:00, 115MB/s][A
+Downloading (…)of-00002.safetensors: 100% 3.50G/3.50G [00:30<00:00, 85.3MB/s][ADownloading (…)of-00002.safetensors: 100% 3.50G/3.50G [00:30<00:00, 114MB/s] 
+Downloading shards: 100% 2/2 [01:59<00:00, 54.49s/it]Downloading shards: 100% 2/2 [01:59<00:00, 59.53s/it]
+Downloading shards: 100% 2/2 [01:59<00:00, 54.47s/it]Downloading shards: 100% 2/2 [01:59<00:00, 59.52s/it]
+Downloading shards: 100% 2/2 [01:59<00:00, 54.46s/it]Downloading shards: 100% 2/2 [01:59<00:00, 59.51s/it]
+Downloading shards: 100% 2/2 [01:59<00:00, 54.48s/it]Downloading shards: 100% 2/2 [01:59<00:00, 59.52s/it]
+Downloading shards: 100% 2/2 [01:59<00:00, 54.48s/it]Downloading shards: 100% 2/2 [01:59<00:00, 59.54s/it]
+Downloading shards: 100% 2/2 [01:59<00:00, 54.49s/it]Downloading shards: 100% 2/2 [01:59<00:00, 59.54s/it]
+Downloading shards: 100% 2/2 [01:59<00:00, 54.48s/it]Downloading shards: 100% 2/2 [01:59<00:00, 59.53s/it]
+Downloading shards: 100% 2/2 [01:59<00:00, 54.50s/it]Downloading shards: 100% 2/2 [01:59<00:00, 59.54s/it]
+Loading checkpoint shards:   0% 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0% 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0% 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0% 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0% 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0% 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0% 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0% 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50% 1/2 [00:05<00:05,  5.59s/it]Loading checkpoint shards:  50% 1/2 [00:05<00:05,  5.74s/it]Loading checkpoint shards:  50% 1/2 [00:05<00:05,  5.58s/it]Loading checkpoint shards:  50% 1/2 [00:05<00:05,  5.89s/it]Loading checkpoint shards:  50% 1/2 [00:06<00:06,  6.19s/it]Loading checkpoint shards: 100% 2/2 [00:07<00:00,  3.66s/it]Loading checkpoint shards: 100% 2/2 [00:07<00:00,  3.97s/it]
+Loading checkpoint shards: 100% 2/2 [00:07<00:00,  3.59s/it]Loading checkpoint shards: 100% 2/2 [00:07<00:00,  3.89s/it]
+/usr/local/lib/python3.10/site-packages/transformers/utils/hub.py:374: FutureWarning: The `use_auth_token` argument is deprecated and will be removed in v5 of Transformers. Please use `token` instead.
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/transformers/utils/hub.py:374: FutureWarning: The `use_auth_token` argument is deprecated and will be removed in v5 of Transformers. Please use `token` instead.
+  warnings.warn(
+Loading checkpoint shards:  50% 1/2 [00:06<00:06,  6.98s/it]Loading checkpoint shards: 100% 2/2 [00:07<00:00,  3.68s/it]Loading checkpoint shards: 100% 2/2 [00:07<00:00,  3.97s/it]
+/usr/local/lib/python3.10/site-packages/transformers/utils/hub.py:374: FutureWarning: The `use_auth_token` argument is deprecated and will be removed in v5 of Transformers. Please use `token` instead.
+  warnings.warn(
+Downloading generation_config.json:   0% 0.00/188 [00:00<?, ?B/s]Downloading generation_config.json: 100% 188/188 [00:00<00:00, 1.05MB/s]
+Downloading (…)model.bin.index.json:   0% 0.00/26.8k [00:00<?, ?B/s]Downloading (…)model.bin.index.json: 100% 26.8k/26.8k [00:00<00:00, 82.3MB/s]
+Loading checkpoint shards:  50% 1/2 [00:07<00:07,  7.34s/it]Loading checkpoint shards:  50% 1/2 [00:07<00:07,  7.57s/it]Loading checkpoint shards: 100% 2/2 [00:08<00:00,  3.99s/it]Loading checkpoint shards: 100% 2/2 [00:08<00:00,  4.28s/it]
+/usr/local/lib/python3.10/site-packages/transformers/utils/hub.py:374: FutureWarning: The `use_auth_token` argument is deprecated and will be removed in v5 of Transformers. Please use `token` instead.
+  warnings.warn(
+Loading checkpoint shards: 100% 2/2 [00:08<00:00,  3.64s/it]Loading checkpoint shards: 100% 2/2 [00:08<00:00,  4.03s/it]
+/usr/local/lib/python3.10/site-packages/transformers/utils/hub.py:374: FutureWarning: The `use_auth_token` argument is deprecated and will be removed in v5 of Transformers. Please use `token` instead.
+  warnings.warn(
+Loading checkpoint shards: 100% 2/2 [00:08<00:00,  3.92s/it]Loading checkpoint shards: 100% 2/2 [00:08<00:00,  4.38s/it]
+/usr/local/lib/python3.10/site-packages/transformers/utils/hub.py:374: FutureWarning: The `use_auth_token` argument is deprecated and will be removed in v5 of Transformers. Please use `token` instead.
+  warnings.warn(
+Loading checkpoint shards: 100% 2/2 [00:09<00:00,  4.15s/it]Loading checkpoint shards: 100% 2/2 [00:09<00:00,  4.67s/it]
+/usr/local/lib/python3.10/site-packages/transformers/utils/hub.py:374: FutureWarning: The `use_auth_token` argument is deprecated and will be removed in v5 of Transformers. Please use `token` instead.
+  warnings.warn(
+[rank1]:[W512 08:02:40.981315766 ProcessGroupNCCL.cpp:1117] WARNING: process group has NOT been destroyed before it is being destructed. On normal program exit, the application should call destroy_process_group to ensure that any pending NCCL data transfers have finished in this process. In rare cases this process can exit before this point and block the progress of another member of the process group. This constraint has always been present,  but this warning has only been added since PyTorch 2.4
+[rank2]:[W512 08:02:40.987639079 ProcessGroupNCCL.cpp:1117] WARNING: process group has NOT been destroyed before it is being destructed. On normal program exit, the application should call destroy_process_group to ensure that any pending NCCL data transfers have finished in this process. In rare cases this process can exit before this point and block the progress of another member of the process group. This constraint has always been present,  but this warning has only been added since PyTorch 2.4
+Loading checkpoint shards: 100% 2/2 [00:09<00:00,  4.41s/it]Loading checkpoint shards: 100% 2/2 [00:09<00:00,  4.85s/it]
+/usr/local/lib/python3.10/site-packages/transformers/utils/hub.py:374: FutureWarning: The `use_auth_token` argument is deprecated and will be removed in v5 of Transformers. Please use `token` instead.
+  warnings.warn(
+[rank5]:[W512 08:02:40.180286791 ProcessGroupNCCL.cpp:1117] WARNING: process group has NOT been destroyed before it is being destructed. On normal program exit, the application should call destroy_process_group to ensure that any pending NCCL data transfers have finished in this process. In rare cases this process can exit before this point and block the progress of another member of the process group. This constraint has always been present,  but this warning has only been added since PyTorch 2.4
+[rank0]:[W512 08:02:40.617460432 ProcessGroupNCCL.cpp:1117] WARNING: process group has NOT been destroyed before it is being destructed. On normal program exit, the application should call destroy_process_group to ensure that any pending NCCL data transfers have finished in this process. In rare cases this process can exit before this point and block the progress of another member of the process group. This constraint has always been present,  but this warning has only been added since PyTorch 2.4
+[rank4]:[W512 08:02:40.627891734 ProcessGroupNCCL.cpp:1117] WARNING: process group has NOT been destroyed before it is being destructed. On normal program exit, the application should call destroy_process_group to ensure that any pending NCCL data transfers have finished in this process. In rare cases this process can exit before this point and block the progress of another member of the process group. This constraint has always been present,  but this warning has only been added since PyTorch 2.4
+[rank3]:[W512 08:02:41.638015666 ProcessGroupNCCL.cpp:1117] WARNING: process group has NOT been destroyed before it is being destructed. On normal program exit, the application should call destroy_process_group to ensure that any pending NCCL data transfers have finished in this process. In rare cases this process can exit before this point and block the progress of another member of the process group. This constraint has always been present,  but this warning has only been added since PyTorch 2.4
+[rank6]:[W512 08:02:42.039368504 ProcessGroupNCCL.cpp:1117] WARNING: process group has NOT been destroyed before it is being destructed. On normal program exit, the application should call destroy_process_group to ensure that any pending NCCL data transfers have finished in this process. In rare cases this process can exit before this point and block the progress of another member of the process group. This constraint has always been present,  but this warning has only been added since PyTorch 2.4
+[rank7]:[W512 08:02:42.309046009 ProcessGroupNCCL.cpp:1117] WARNING: process group has NOT been destroyed before it is being destructed. On normal program exit, the application should call destroy_process_group to ensure that any pending NCCL data transfers have finished in this process. In rare cases this process can exit before this point and block the progress of another member of the process group. This constraint has always been present,  but this warning has only been added since PyTorch 2.4
+[run_afl_fuzz] Running target with afl-fuzz
+[run_afl_fuzz] Running command: ./afl-fuzz -i /out/seeds -o /out/corpus -m none -t 1000+ -d -x ./afl++.dict -c /out/cmplog/fuzz_objcopy -- /out/fuzz_objcopy 2147483647
+AT first mapsize 16777216
+[1;92m[+] [0mEnabled environment variable AFL_SKIP_CPUFREQ with value 1[0m
+[1;92m[+] [0mEnabled environment variable AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES with value 1[0m
+[1;92m[+] [0mEnabled environment variable AFL_NO_UI with value 1[0m
+[1;92m[+] [0mEnabled environment variable AFL_NO_AFFINITY with value 1[0m
+[1;92m[+] [0mEnabled environment variable AFL_FAST_CAL with value 1[0m
+[1;92m[+] [0mEnabled environment variable AFL_NO_WARN_INSTABILITY with value 1[0m
+[1;92m[+] [0mEnabled environment variable AFL_CUSTOM_MUTATOR_LIBRARY with value aflpp-mutator.so[0m
+[1;92m[+] [0mEnabled environment variable AFL_CMPLOG_ONLY_NEW with value 1[0m
+[0;36mafl-fuzz++4.09a[0m based on afl by Michal Zalewski and a large online community
+[1;92m[+] [0mAFL++ is maintained by Marc "van Hauser" Heuse, Dominik Maier, Andrea Fioraldi and Heiko "hexcoder" Eißfeldt[0m
+[1;92m[+] [0mAFL++ is open source, get it at https://github.com/AFLplusplus/AFLplusplus[0m
+[1;92m[+] [0mNOTE: AFL++ >= v3 has changed defaults and behaviours - see README.md[0m
+[1;92m[+] [0mNo -M/-S set, autoconfiguring for "-S default"[0m
+[1;92m[+] [0mEnabled environment variable AFL_DISABLE_TRIM with value 1[0m
+[1;94m[*] [0mGetting to work...[0m
+[1;92m[+] [0mUsing exponential power schedule (FAST)[0m
+[1;92m[+] [0mCmpLog level: 2[0m
+[1;92m[+] [0mEnabled environment variable AFL_SHUFFLE_QUEUE with value 1[0m
+[1;92m[+] [0mEnabled testcache with 50 MB[0m
+[1;92m[+] [0mGenerating fuzz data with a length of min=1 max=1048576[0m
+[1;94m[*] [0mChecking core_pattern...[0m
+[1;92m[+] [0mDisabling the UI because AFL_NO_UI is set.[0m
+[1;92m[+] [0mYou have 80 CPU cores and 10 runnable tasks (utilization: 12%).[0m
+[1;92m[+] [0mTry parallel jobs - see docs/fuzzing_in_depth.md#c-using-multiple-cores[0m
+[1;94m[*] [0mSetting up output directories...[0m
+[1;93m[!] [1;97mWARNING: [0mNot binding to a CPU core (AFL_NO_AFFINITY set).[0m
+[1;94m[*] [0mLoading custom mutator library from 'aflpp-mutator.so'...[0m
+[1;92m[+] [0mFound 'afl_custom_mutator'.[0m
+[1;94m[*] [0moptional symbol 'afl_custom_fuzz_count' not found.[0m
+[1;94m[*] [0moptional symbol 'afl_custom_post_process' not found.[0m
+[1;94m[*] [0moptional symbol 'afl_custom_init_trim' not found.[0m
+[1;94m[*] [0moptional symbol 'afl_custom_trim' not found.[0m
+[1;94m[*] [0moptional symbol 'afl_custom_post_trim' not found.[0m
+[1;94m[*] [0moptional symbol 'afl_custom_havoc_mutation' not found.[0m
+[1;94m[*] [0moptional symbol 'afl_custom_havoc_mutation_probability' not found.[0m
+[1;94m[*] [0moptional symbol 'afl_custom_queue_get' not found.[0m
+[1;92m[+] [0mFound 'afl_custom_splice_optout'.[0m
+[1;94m[*] [0moptional symbol 'afl_custom_fuzz_send' not found.[0m
+[1;94m[*] [0moptional symbol 'afl_custom_queue_new_entry' not found[0m
+[1;94m[*] [0moptional symbol 'afl_custom_describe' not found.[0m
+[1;92m[+] [0mCustom mutator 'aflpp-mutator.so' installed successfully.[0m
+[1;94m[*] [0mScanning '/out/seeds'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000000'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000001'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000002'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000003'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000004'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000005'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000006'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000007'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000008'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000009'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000010'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000011'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000012'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000013'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000014'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000015'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000016'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000017'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000018'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000019'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000020'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000021'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000022'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000023'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000024'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000025'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000026'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000027'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000028'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000029'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000030'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000031'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000032'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000033'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000034'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000035'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000036'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000037'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000038'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000039'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000040'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000041'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000042'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000043'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000044'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000045'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000046'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000047'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000048'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000049'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000050'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000051'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000052'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000053'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000054'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000055'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000056'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000057'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000058'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000059'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000060'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000061'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000062'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000063'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000064'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000065'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000066'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000067'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000068'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000069'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000070'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000071'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000072'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000073'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000074'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000075'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000076'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000077'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000078'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000079'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000080'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000081'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000082'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000083'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000084'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000085'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000086'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000087'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000088'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000089'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000090'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000091'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000092'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000093'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000094'...[0m
+[1;94m[*] [0mScanning '/out/seeds/0000000000000095'...[0m
+[1;92m[+] [0mLoaded a total of 96 seeds.[0m
+[1;94m[*] [0mCreating hard links for all input files...[0m
+[1;94m[*] [0mValidating target binary...[0m
+[1;92m[+] [0m[1;95mPersistent mode binary detected.[0m
+[1;92m[+] [0m[1;95mDeferred forkserver binary detected.[0m
+[1;94m[*] [0mValidating target binary...[0m
+[1;92m[+] [0m[1;95mPersistent mode binary detected.[0m
+[1;92m[+] [0m[1;95mDeferred forkserver binary detected.[0m
+[1;94m[*] [0mSpinning up the fork server...[0m
+[1;92m[+] [0mAll right - fork server is up.[0m
+[1;94m[*] [0mUsing SHARED MEMORY FUZZING feature.[0m
+[1;94m[*] [0mTarget map size: 181741[0m
+[1;94m[*] [0mSpawning cmplog forkserver[0m
+[1;94m[*] [0mSpinning up the fork server...[0m
+[1;92m[+] [0mAll right - fork server is up.[0m
+[1;94m[*] [0mUsing SHARED MEMORY FUZZING feature.[0m
+[1;94m[*] [0mTarget map size: 216220[0m
+[1;92m[+] [0mCmplog forkserver successfully started[0m
+[1;94m[*] [0mNo auto-generated dictionary tokens to reuse.[0m
+[1;94m[*] [0mLoading extra dictionary from './afl++.dict' (level 0)...[0m
+[1;94m[*] [0mLoaded 20222 extra tokens, size range 2 B to 30 B.[0m
+[1;93m[!] [1;97mWARNING: [0mMore than 256 tokens - will use them probabilistically.[0m
+[1;92m[+] [0mLoaded a total of 2569 extras.[0m
+16777216 181760
+[1;94m[*] [0mAttempting dry run with 'id:000000,time:0,execs:0,orig:0389250c52905d8713d2996017478ef0d9b6f0bd'...[0m
+[1;90m    len = 113664, map size = 1270, exec speed = 2209 us, hash = 97f5bad89ff51bc6
+[0m[1;94m[*] [0mAttempting dry run with 'id:000001,time:0,execs:0,orig:09e698915659772ee89105e590452eab40efa3e2'...[0m
+[1;90m    len = 72552, map size = 1258, exec speed = 1649 us, hash = 1c03161b8671ddd9
+[0m[1;94m[*] [0mAttempting dry run with 'id:000002,time:0,execs:0,orig:0a36bd604eaa20cf28953214f772a45be1c913b8'...[0m
+[1;90m    len = 306240, map size = 1134, exec speed = 2834 us, hash = 9b68081413b13044
+[0m[1;94m[*] [0mAttempting dry run with 'id:000003,time:0,execs:0,orig:0b324d714a1b71c8108ab7d2c4a6156116172579'...[0m
+[1;90m    len = 9032, map size = 1236, exec speed = 872 us, hash = 3b320e1a131fe45f
+[0m[1;94m[*] [0mAttempting dry run with 'id:000004,time:0,execs:0,orig:0e02ec231081f2726acbb1104021ef4fe67c9d97'...[0m
+[1;90m    len = 471120, map size = 1269, exec speed = 7604 us, hash = 7ac6135727aa652a
+[0m[1;94m[*] [0mAttempting dry run with 'id:000005,time:0,execs:0,orig:0f3c4ff28f354aede202d54e9d1c5529a3bf87d8'...[0m
+[1;90m    len = 345088, map size = 954, exec speed = 2062 us, hash = a5fbfa18bc7837ba
+[0m[1;94m[*] [0mAttempting dry run with 'id:000006,time:0,execs:0,orig:11bf4cc4549f9b9b7e42b4b9d891ca1583684d21'...[0m
+[1;90m    len = 22656, map size = 1248, exec speed = 2605 us, hash = 7cc218e02a246359
+[0m[1;94m[*] [0mAttempting dry run with 'id:000007,time:0,execs:0,orig:150b46a042651b770deebba630e196e416714dbe'...[0m
+[1;90m    len = 139216, map size = 1271, exec speed = 3652 us, hash = 26f038a0fcc21803
+[0m[1;94m[*] [0mAttempting dry run with 'id:000008,time:0,execs:0,orig:15b21f285fd944c580c446f642cff4df6e0121bd'...[0m
+[1;90m    len = 663256, map size = 1301, exec speed = 16529 us, hash = 8871a3f836d1b4d2
+[0m[1;94m[*] [0mAttempting dry run with 'id:000009,time:0,execs:0,orig:1e4008e826d812e9c52c864b8261650662d64452'...[0m
+[1;90m    len = 191272, map size = 1268, exec speed = 2759 us, hash = b476a002f2468326
+[0m[1;94m[*] [0mAttempting dry run with 'id:000010,time:0,execs:0,orig:21b46b6843aaee78719e2578590b53610dda1b2d'...[0m
+[1;90m    len = 207520, map size = 1266, exec speed = 4397 us, hash = c2570841651f1161
+[0m[1;94m[*] [0mAttempting dry run with 'id:000011,time:0,execs:0,orig:299ee5d69e2467f661420d57f27cb4232266cbd2'...[0m
+[1;90m    len = 267632, map size = 1269, exec speed = 5985 us, hash = 6f744d685d72d923
+[0m[1;94m[*] [0mAttempting dry run with 'id:000012,time:0,execs:0,orig:2b32dcdfe1f43922d1f0ac9135d809a5f2869c29'...[0m
+[1;90m    len = 155800, map size = 1267, exec speed = 2499 us, hash = 80c9079c723b59f7
+[0m[1;94m[*] [0mAttempting dry run with 'id:000013,time:0,execs:0,orig:2b79baff1e4aa406f58899f59ccd836c515f8e8a'...[0m
+[1;90m    len = 847400, map size = 1095, exec speed = 1879 us, hash = 7786590e3d32f953
+[0m[1;94m[*] [0mAttempting dry run with 'id:000014,time:0,execs:0,orig:3148d214c523be652f6b4e1a2e0bd0560ecc07a3'...[0m
+[1;90m    len = 59088, map size = 1125, exec speed = 2027 us, hash = 1635d2a9e72fd013
+[0m[1;94m[*] [0mAttempting dry run with 'id:000015,time:0,execs:0,orig:32eda86f7c3123f461178d7709d0e2cc03a9efda'...[0m
+[1;90m    len = 16816, map size = 1253, exec speed = 1526 us, hash = 147d527c89e35c8e
+[0m[1;94m[*] [0mAttempting dry run with 'id:000016,time:0,execs:0,orig:3308c200d120576f3b69b91974f581933f8f4a23'...[0m
+[1;90m    len = 252152, map size = 1264, exec speed = 3830 us, hash = 0c47703365b44861
+[0m[1;94m[*] [0mAttempting dry run with 'id:000017,time:0,execs:0,orig:341a458dac73205e0360b81d7d5d1e064d965e2c'...[0m
+[1;90m    len = 54248, map size = 1257, exec speed = 1692 us, hash = cf73f81129ce256f
+[0m[1;94m[*] [0mAttempting dry run with 'id:000018,time:0,execs:0,orig:38b84839365374a0c36ce23fa695fbd838040a7c'...[0m
+[1;90m    len = 643712, map size = 1296, exec speed = 10309 us, hash = 306eeabdc16996c0
+[0m[1;94m[*] [0mAttempting dry run with 'id:000019,time:0,execs:0,orig:398c2e57042b98e8f6695a919248d03ba2f5d6a0'...[0m
+[1;90m    len = 8088, map size = 834, exec speed = 749 us, hash = 453f073277fdcc36
+[0m[1;94m[*] [0mAttempting dry run with 'id:000020,time:0,execs:0,orig:39cd3dfc79bcf560e56a811bc90fe699293a66a3'...[0m
+[1;90m    len = 5752, map size = 1181, exec speed = 831 us, hash = 62f9de5156a119f8
+[0m[1;94m[*] [0mAttempting dry run with 'id:000021,time:0,execs:0,orig:3a61e952f31d99fbd66266d792ee7d4fae7acda8'...[0m
+[1;90m    len = 926576, map size = 1074, exec speed = 2021 us, hash = 51fb1a57763fb74f
+[0m[1;94m[*] [0mAttempting dry run with 'id:000022,time:0,execs:0,orig:3ad193dc1eda340b9baa1b7b388e9397ad8177bc'...[0m
+[1;90m    len = 770392, map size = 1101, exec speed = 2005 us, hash = d2238d0b3f6a686e
+[0m[1;94m[*] [0mAttempting dry run with 'id:000023,time:0,execs:0,orig:3ba1df67ab78fa9cf225b1bde2ffcb226903b243'...[0m
+[1;90m    len = 45296, map size = 1260, exec speed = 1177 us, hash = d00c17231de8e3aa
+[0m[1;94m[*] [0mAttempting dry run with 'id:000024,time:0,execs:0,orig:3fd2003073b94867b34cbd947a31512938151fa9'...[0m
+[1;90m    len = 181456, map size = 1274, exec speed = 2693 us, hash = 43a9604e64f236ac
+[0m[1;94m[*] [0mAttempting dry run with 'id:000025,time:0,execs:0,orig:404191097949a72008b476ae98674040ce9f8318'...[0m
+[1;90m    len = 693024, map size = 1110, exec speed = 2262 us, hash = aa49f472a479c193
+[0m[1;94m[*] [0mAttempting dry run with 'id:000026,time:0,execs:0,orig:4110033da8176e7f3b396023e299ed5b20cccb12'...[0m
+[1;90m    len = 401436, map size = 1576, exec speed = 184308 us, hash = b14526446185df5f
+[0m[1;94m[*] [0mAttempting dry run with 'id:000027,time:0,execs:0,orig:4111bebacb6ccdd7e52784a16ca1b75f9c1d54b8'...[0m
+[1;90m    len = 90808, map size = 1181, exec speed = 1467 us, hash = ff831a7586964a4b
+[0m[1;94m[*] [0mAttempting dry run with 'id:000028,time:0,execs:0,orig:44dcb34920c8747c549733f6f341b3f2fb725efc'...[0m
+[1;90m    len = 10008, map size = 1236, exec speed = 936 us, hash = 2682e066c751e809
+[0m[1;94m[*] [0mAttempting dry run with 'id:000029,time:0,execs:0,orig:48242df196ec3a2c6484b37298b086a5aa0d2706'...[0m
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:441: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:309: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+[1;90m    len = 648224, map size = 1296, exec speed = 8342 us, hash = c5a97a18f2ac4b21
+[0m[1;94m[*] [0mAttempting dry run with 'id:000030,time:0,execs:0,orig:4a97f4a008ec8988b4b9c003e7e62346e788607a'...[0m
+[1;90m    len = 116112, map size = 1269, exec speed = 2158 us, hash = 6868626a9d0d9813
+[0m[1;94m[*] [0mAttempting dry run with 'id:000031,time:0,execs:0,orig:4a9c4617af0ae3c279a0689bbead3e91bd3f4acf'...[0m
+[1;90m    len = 77936, map size = 1261, exec speed = 1954 us, hash = 194ff16316f714ff
+[0m[1;94m[*] [0mAttempting dry run with 'id:000032,time:0,execs:0,orig:4ec7910d674f8d8533b0d9650b471af39e386bdc'...[0m
+[1;90m    len = 94168, map size = 1262, exec speed = 1891 us, hash = 89943c79136964cf
+[0m[1;94m[*] [0mAttempting dry run with 'id:000033,time:0,execs:0,orig:4ee6685144fe43002e28b917399f60dd1afcb81d'...[0m
+[1;90m    len = 563936, map size = 822, exec speed = 1177 us, hash = ae6baba3ab08f9a0
+[0m[1;94m[*] [0mAttempting dry run with 'id:000034,time:0,execs:0,orig:56fd10f7a98c7628872492db7b82c0c00ebff196'...[0m
+[1;90m    len = 9552, map size = 953, exec speed = 781 us, hash = f0e02001ac81d164
+[0m[1;94m[*] [0mAttempting dry run with 'id:000035,time:0,execs:0,orig:57b14aef2f830ee78e615ac76aa8683cc8e24939'...[0m
+[1;90m    len = 457040, map size = 1289, exec speed = 5250 us, hash = 5146f4dde91a83d2
+[0m[1;94m[*] [0mAttempting dry run with 'id:000036,time:0,execs:0,orig:59108a80affb120a96b12185ccf96e74066cd667'...[0m
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_processes` was set to a value of `8`
+		More than one GPU was found, enabling multi-GPU training.
+		If this was unintended please pass in `--num_processes=1`.
+	`--num_machines` was set to a value of `1`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+[1;90m    len = 168328, map size = 1272, exec speed = 2922 us, hash = ea0e254b47ae6840
+[0m[1;94m[*] [0mAttempting dry run with 'id:000037,time:0,execs:0,orig:5a4b84c24a68ca2217c4fb4eb3dc4e801036ca25'...[0m
+[1;90m    len = 10088, map size = 1243, exec speed = 977 us, hash = 676893694b2b37e5
+[0m[1;94m[*] [0mAttempting dry run with 'id:000038,time:0,execs:0,orig:5c53e2e4989c9c10d62e909815c131ea66730dfc'...[0m
+[1;90m    len = 431376, map size = 1273, exec speed = 7112 us, hash = dcd734edacf40e5c
+[0m[1;94m[*] [0mAttempting dry run with 'id:000039,time:0,execs:0,orig:5c681edb1f388c9b2ce8bc4d1ad14db05f9b716a'...[0m
+[1;90m    len = 74960, map size = 1272, exec speed = 1684 us, hash = 7a485a3cb9cb16f2
+[0m[1;94m[*] [0mAttempting dry run with 'id:000040,time:0,execs:0,orig:5cb48e75c157b151cc141fba8a3190d1c17228af'...[0m
+[1;90m    len = 623216, map size = 1296, exec speed = 8610 us, hash = 5c6f843d57e82ddb
+[0m[1;94m[*] [0mAttempting dry run with 'id:000041,time:0,execs:0,orig:5d6b959472b4b68f9e7b626292107bfa8681c3de'...[0m
+[1;90m    len = 288128, map size = 1271, exec speed = 4013 us, hash = 71f4df06266bacda
+[0m[1;94m[*] [0mAttempting dry run with 'id:000042,time:0,execs:0,orig:5d831cab54a41c5a883db1177df810521b4c0f5b'...[0m
+[1;90m    len = 72392, map size = 1255, exec speed = 1899 us, hash = 725d096f1a53bd3d
+[0m[1;94m[*] [0mAttempting dry run with 'id:000043,time:0,execs:0,orig:609b081247aeaf21ea3097c45034b145ff9e18d5'...[0m
+[1;90m    len = 77872, map size = 1261, exec speed = 1837 us, hash = e77a68f9b06591b4
+[0m[1;94m[*] [0mAttempting dry run with 'id:000044,time:0,execs:0,orig:62b4d676e16a8e19aebaf29afb49ca5acb15e615'...[0m
+[1;90m    len = 3008, map size = 865, exec speed = 693 us, hash = 194f0b6304e4457c
+[0m[1;94m[*] [0mAttempting dry run with 'id:000045,time:0,execs:0,orig:65ae4b3271b96d5c2928936d22496434e130fd0b'...[0m
+[1;90m    len = 21606, map size = 1434, exec speed = 1602 us, hash = 8623413894a7f537
+[0m[1;94m[*] [0mAttempting dry run with 'id:000046,time:0,execs:0,orig:6895915e636d2e37bfb5259b0f08347f922a9406'...[0m
+[1;90m    len = 954028, map size = 1155, exec speed = 2276 us, hash = 54175c71a6488fbd
+[0m[1;94m[*] [0mAttempting dry run with 'id:000047,time:0,execs:0,orig:6a92cc62d0d820b892ed1b0b806b6fc4fcfbfecd'...[0m
+[1;90m    len = 29544, map size = 1250, exec speed = 1311 us, hash = 2388f7815bef2f3c
+[0m[1;94m[*] [0mAttempting dry run with 'id:000048,time:0,execs:0,orig:6abc3f4383d6826c8b99505ce3ea991ec6acc864'...[0m
+[1;90m    len = 135832, map size = 1273, exec speed = 2192 us, hash = 960753aea83effc9
+[0m[1;94m[*] [0mAttempting dry run with 'id:000049,time:0,execs:0,orig:6e7f9dcc834c1724daa645a8f3501ac546d0707e'...[0m
+[1;90m    len = 91720, map size = 1258, exec speed = 1752 us, hash = 2446d3afea48d6b6
+[0m[1;94m[*] [0mAttempting dry run with 'id:000050,time:0,execs:0,orig:7afb717eadedd79dd939f488cebe810984cfadcf'...[0m
+[1;90m    len = 6056, map size = 828, exec speed = 731 us, hash = dae4248ab3a0eb94
+[0m[1;94m[*] [0mAttempting dry run with 'id:000051,time:0,execs:0,orig:7c52f22d92b7feb8a115e31710584c611fc6a51c'...[0m
+[1;90m    len = 6656, map size = 771, exec speed = 1099 us, hash = 47345caedfc2e740
+[0m[1;94m[*] [0mAttempting dry run with 'id:000052,time:0,execs:0,orig:7e790456f87efbf5a9f1cf8f2cd861cac17a15d8'...[0m
+[1;90m    len = 173604, map size = 1190, exec speed = 1831 us, hash = a54b0665203db907
+[0m[1;94m[*] [0mAttempting dry run with 'id:000053,time:0,execs:0,orig:7efbb1a5408a6dc09a965a79f7daa516833e4858'...[0m
+[1;90m    len = 39584, map size = 970, exec speed = 1231 us, hash = dcd25e2a467a28a4
+[0m[1;94m[*] [0mAttempting dry run with 'id:000054,time:0,execs:0,orig:7f30c9015d4fa1027b381a95ec7c11a938e0d3d9'...[0m
+[1;90m    len = 445576, map size = 1294, exec speed = 4858 us, hash = 85e4ae892d7398fd
+[0m[1;94m[*] [0mAttempting dry run with 'id:000055,time:0,execs:0,orig:7f37e497f6ccf12322cf8d94be5c63d42081f092'...[0m
+[1;90m    len = 44272, map size = 1257, exec speed = 1363 us, hash = 6ee9678fbd8b505c
+[0m[1;94m[*] [0mAttempting dry run with 'id:000056,time:0,execs:0,orig:81d31c151c2eb8263d24665a75171d28a3c5be3f'...[0m
+[1;90m    len = 363712, map size = 1271, exec speed = 4697 us, hash = 99681c69c3f46dfa
+[0m[1;94m[*] [0mAttempting dry run with 'id:000057,time:0,execs:0,orig:81f34bf8176086d182ffb4ba04edc595bd307e6a'...[0m
+[1;90m    len = 368672, map size = 1266, exec speed = 4995 us, hash = efc509941c0c4bd1
+[0m[1;94m[*] [0mAttempting dry run with 'id:000058,time:0,execs:0,orig:8532bc8bc161a9a2292ef5ebfd672c39cd4fd1e5'...[0m
+[1;90m    len = 131552, map size = 1263, exec speed = 1989 us, hash = 3abd33c053b09989
+[0m[1;94m[*] [0mAttempting dry run with 'id:000059,time:0,execs:0,orig:8631b6c1993a2095252124489cc02ca188e47a62'...[0m
+[1;90m    len = 3000, map size = 865, exec speed = 756 us, hash = 194f0b6304e4457c
+[0m[1;94m[*] [0mAttempting dry run with 'id:000060,time:0,execs:0,orig:8cbe653077c7ed1ccb8f19be4447d9834c55468e'...[0m
+[1;90m    len = 851464, map size = 1079, exec speed = 1981 us, hash = 7c37a35d94928a6e
+[0m[1;94m[*] [0mAttempting dry run with 'id:000061,time:0,execs:0,orig:8dea7f3d179a01a308b5fa68b717e4b2c36d52ac'...[0m
+[1;90m    len = 15328, map size = 1247, exec speed = 1133 us, hash = 3a05b0b44847b326
+[0m[1;94m[*] [0mAttempting dry run with 'id:000062,time:0,execs:0,orig:8dfcc68bcd79798a1eeead0b3d947796c4e7de25'...[0m
+[1;90m    len = 903556, map size = 1152, exec speed = 2322 us, hash = 69e7a99a4f2b435e
+[0m[1;94m[*] [0mAttempting dry run with 'id:000063,time:0,execs:0,orig:8f73212af70e1384731c71d0f687ab4850ddc248'...[0m
+[1;90m    len = 148632, map size = 1271, exec speed = 2395 us, hash = c7e158f481e179b1
+[0m[1;94m[*] [0mAttempting dry run with 'id:000064,time:0,execs:0,orig:9011deb4bde75f1c33e5dd6004e4a9881a553926'...[0m
+[1;90m    len = 546768, map size = 970, exec speed = 2982 us, hash = 314213edb524f25e
+[0m[1;94m[*] [0mAttempting dry run with 'id:000065,time:0,execs:0,orig:941e61279de128acde584e53ef51632095ea842b'...[0m
+[1;90m    len = 625336, map size = 1297, exec speed = 9600 us, hash = 1bd01b55711caee4
+[0m[1;94m[*] [0mAttempting dry run with 'id:000066,time:0,execs:0,orig:9b36d70636e230a9fb3cb6e01930efd263689b64'...[0m
+[1;90m    len = 436765, map size = 1582, exec speed = 261328 us, hash = c4290ea8a6aefb5e
+[0m[1;94m[*] [0mAttempting dry run with 'id:000067,time:0,execs:0,orig:a769777d7c2eb33304ca77a4f292541f7995676f'...[0m
+[1;90m    len = 67432, map size = 1257, exec speed = 1784 us, hash = 95fea868444e15b9
+[0m[1;94m[*] [0mAttempting dry run with 'id:000068,time:0,execs:0,orig:ab1906e5814df509a52bf8e5b45352f76dd29c85'...[0m
+[1;90m    len = 182328, map size = 1265, exec speed = 2305 us, hash = 9c396233d112281f
+[0m[1;94m[*] [0mAttempting dry run with 'id:000069,time:0,execs:0,orig:add19e504c254758f2ea8dcda3821c77fafb4923'...[0m
+[1;90m    len = 926536, map size = 824, exec speed = 1474 us, hash = e341be6ea824f721
+[0m[1;94m[*] [0mAttempting dry run with 'id:000070,time:0,execs:0,orig:b000a7c9eab6c0d4fc16ed0fe7fe9acc41db2190'...[0m
+[1;90m    len = 142392, map size = 1261, exec speed = 2032 us, hash = 9eb2b1de9433df07
+[0m[1;94m[*] [0mAttempting dry run with 'id:000071,time:0,execs:0,orig:b2b8acef49feecc87425147967a7134b8ba96d5e'...[0m
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:441: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:309: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:441: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+[1;90m    len = 645760, map size = 1297, exec speed = 9545 us, hash = 6218a66626782509
+[0m[1;94m[*] [0mAttempting dry run with 'id:000072,time:0,execs:0,orig:b30e95e7ced8435c5f15fedabefb5ea42b9d61d0'...[0m
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:309: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+[1;90m    len = 93848, map size = 1259, exec speed = 1904 us, hash = c840878016a7385d
+[0m[1;94m[*] [0mAttempting dry run with 'id:000073,time:0,execs:0,orig:b3fe8a42fd774460bb34472a03f33786d17f30c5'...[0m
+[1;90m    len = 113624, map size = 1280, exec speed = 2185 us, hash = 6bd5f1d697309ef6
+[0m[1;94m[*] [0mAttempting dry run with 'id:000074,time:0,execs:0,orig:bd2229c3452cdf644daa6b53852711e6a9e0756d'...[0m
+[1;90m    len = 8408, map size = 1235, exec speed = 955 us, hash = 6aa389f8db8b53a1
+[0m[1;94m[*] [0mAttempting dry run with 'id:000075,time:0,execs:0,orig:c6b24a775e04a8bb0d4e11b0477c905936dd972d'...[0m
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:441: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:441: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:441: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+[1;90m    len = 115448, map size = 1257, exec speed = 1899 us, hash = ab9fd46cdf162bd6
+[0m[1;94m[*] [0mAttempting dry run with 'id:000076,time:0,execs:0,orig:ca0398ef0571f00932063aafc5b744e152a22ee9'...[0m
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:441: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:309: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+[1;90m    len = 63392, map size = 1267, exec speed = 1769 us, hash = 110760f0d39ad4b5
+[0m[1;94m[*] [0mAttempting dry run with 'id:000077,time:0,execs:0,orig:ca753ae699ffe850768557a856209f3d6c23a332'...[0m
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:309: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:309: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+[1;90m    len = 91792, map size = 966, exec speed = 1362 us, hash = ca93ba0dc5f180af
+[0m[1;94m[*] [0mAttempting dry run with 'id:000078,time:0,execs:0,orig:cdf9d0d9198c7e1fc69a1c846def658ba3e6123b'...[0m
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:309: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+[1;90m    len = 76872, map size = 1257, exec speed = 1846 us, hash = 17111f7bb26aa3d9
+[0m[1;94m[*] [0mAttempting dry run with 'id:000079,time:0,execs:0,orig:d0ee95ac7ef1127bc9a4f72cbaed3d975f779686'...[0m
+[1;90m    len = 35696, map size = 967, exec speed = 1260 us, hash = 96ae2d2d8bcd80c9
+[0m[1;94m[*] [0mAttempting dry run with 'id:000080,time:0,execs:0,orig:d9968e10ae6dd4a48c0aa49a0ced49bf5acc12e4'...[0m
+[1;90m    len = 856496, map size = 1112, exec speed = 2362 us, hash = 05c6d6578ee588ed
+[0m[1;94m[*] [0mAttempting dry run with 'id:000081,time:0,execs:0,orig:db236288a32fecf24e3cb048b1bc50a440cbaf26'...[0m
+[1;90m    len = 811156, map size = 1104, exec speed = 2083 us, hash = 3a8dc51d06dac583
+[0m[1;94m[*] [0mAttempting dry run with 'id:000082,time:0,execs:0,orig:dc1cf31df9c3535b70537f04b3baa4e8701f263e'...[0m
+[1;90m    len = 450568, map size = 962, exec speed = 2344 us, hash = e1b1a56717d08220
+[0m[1;94m[*] [0mAttempting dry run with 'id:000083,time:0,execs:0,orig:e1527dc141cad8cd37949407f98ac85b78008168'...[0m
+[1;90m    len = 62648, map size = 1260, exec speed = 1659 us, hash = 76fe27ef7c601608
+[0m[1;94m[*] [0mAttempting dry run with 'id:000084,time:0,execs:0,orig:e3a5ece64391b472284aa776188a458e8f03c2e5'...[0m
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:441: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+[1;90m    len = 3312, map size = 858, exec speed = 735 us, hash = 2fc44b39b83c31a7
+[0m[1;94m[*] [0mAttempting dry run with 'id:000085,time:0,execs:0,orig:e632cb24e998160809dab890e087afa886f65df5'...[0m
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:441: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:309: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/usr/local/lib/python3.10/site-packages/transformers/utils/generic.py:309: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+[1;90m    len = 260944, map size = 1272, exec speed = 3701 us, hash = 5ab4f1ff59f371a5
+[0m[1;94m[*] [0mAttempting dry run with 'id:000086,time:0,execs:0,orig:e64fc056cae8b7882cdd2fdd1786f4bb3a5af408'...[0m
+[1;90m    len = 135197, map size = 974, exec speed = 1466 us, hash = 0372f247877153de
+[0m[1;94m[*] [0mAttempting dry run with 'id:000087,time:0,execs:0,orig:e682f57a9906bc6aab0485674651be755a78e607'...[0m
+[1;90m    len = 40352, map size = 1258, exec speed = 1326 us, hash = 12127ebfa7274e31
+[0m[1;94m[*] [0mAttempting dry run with 'id:000088,time:0,execs:0,orig:eaec19d4b43b8d93792a103b541477d408e669d2'...[0m
+[1;90m    len = 2968, map size = 859, exec speed = 804 us, hash = 3df60175add5fb43
+[0m[1;94m[*] [0mAttempting dry run with 'id:000089,time:0,execs:0,orig:ed14ff950c1e8db57d1ee6813de36bde07c473e2'...[0m
+[1;90m    len = 66208, map size = 1260, exec speed = 1394 us, hash = 76e40b72d04ef3a4
+[0m[1;94m[*] [0mAttempting dry run with 'id:000090,time:0,execs:0,orig:eff9f057b1c67ff797b17e4d0f3de47d17f0eaa5'...[0m
+[1;90m    len = 779888, map size = 1288, exec speed = 9469 us, hash = 9246a6d0ec111f00
+[0m[1;94m[*] [0mAttempting dry run with 'id:000091,time:0,execs:0,orig:f2cd2b349341094854c5806f617a746dd50a74eb'...[0m
+[1;90m    len = 301568, map size = 956, exec speed = 1792 us, hash = e0fe63bd79f9c764
+[0m[1;94m[*] [0mAttempting dry run with 'id:000092,time:0,execs:0,orig:f57126fadc89cd3e2cac551722a33e28274e7843'...[0m
+[1;90m    len = 195728, map size = 1267, exec speed = 2917 us, hash = 9b80e14c7cb1382c
+[0m[1;94m[*] [0mAttempting dry run with 'id:000093,time:0,execs:0,orig:fbb5fc2edcecac0cf20457c5d75ce82e30222b16'...[0m
+[1;90m    len = 95504, map size = 1261, exec speed = 1805 us, hash = aff94e4ba615fdfd
+[0m[1;94m[*] [0mAttempting dry run with 'id:000094,time:0,execs:0,orig:ff55ecf8c0a583630e0ec3e67c085e32b8513b60'...[0m
+[1;90m    len = 733535, map size = 1222, exec speed = 4162 us, hash = 555bb133cb28d34d
+[0m[1;94m[*] [0mAttempting dry run with 'id:000095,time:0,execs:0,orig:ff87523a1786ae110f82bc286dbe104efeeae4b6'...[0m
+[1;90m    len = 2968, map size = 859, exec speed = 891 us, hash = 3df60175add5fb43
+[0m[1;92m[+] [0mAll test cases processed.[0m
+[1;93m[!] [1;97mWARNING: [0m[1;91mSome test cases are huge (931 kB) - see docs/fuzzing_in_depth.md#i-improve-the-speed[0m
+[1;93m[!] [1;97mWARNING: [0m[1;91mSome test cases look useless. Consider using a smaller set.[0m
+[1;93m[!] [1;97mWARNING: [0mYou have lots of input files; try starting small.[0m
+[1;92m[+] [0mHere are some useful stats:
+
+[1;90m    Test case count : [0m32 favored, 96 variable, 2 ignored, 96 total
+[1;90m       Bitmap range : [0m771 to 1582 bits (average: 1181.20 bits)
+[1;90m        Exec timing : [0m731 to 261k us (average: 7399 us)
+[0m
+[1;94m[*] [0m-t option specified. We'll use an exec timeout of 261328 ms.[0m
+[1;92m[+] [0mAll set and ready to roll![0m
+[1;94m[*] [0mEntering queue cycle 1.[0m
+[1;94m[*] [0mFuzzing test case #51 (96 total, 0 crashes saved, state: started :-), mode=explore, perf_score=0, weight=0, favorite=1, was_fuzzed=0, exec_us=1099, hits=0, map=771, ascii=0, run_time=0:00:00:00)...[0m
+[1;94m[*] [0mFuzzing test case #5 (96 total, 0 crashes saved, state: started :-), mode=explore, perf_score=200, weight=218, favorite=1, was_fuzzed=0, exec_us=2062, hits=0, map=954, ascii=0, run_time=0:00:00:00)...[0m
+/usr/local/lib/python3.10/site-packages/tyro/_fields.py:342: UserWarning: The field base_model_name_or_path is annotated with type <class 'str'>, but the default value None has type <class 'NoneType'>. We'll try to handle this gracefully, but it may cause unexpected behavior.
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_fields.py:342: UserWarning: The field revision is annotated with type <class 'str'>, but the default value None has type <class 'NoneType'>. We'll try to handle this gracefully, but it may cause unexpected behavior.
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'set'> does not match any type in Union: [<class 'list'>, <class 'str'>, <class 'NoneType'>]
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'NoneType'> does not match any type in Union: [<class 'str'>, <enum 'PeftType'>]
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'NoneType'> does not match any type in Union: [<class 'str'>, <enum 'TaskType'>]
+  warnings.warn(
+Traceback (most recent call last):
+  File "/out/structureLLM/llama2_mutator.py", line 340, in <module>
+    main()
+  File "/out/structureLLM/llama2_mutator.py", line 182, in main
+    tokenizer = AutoTokenizer.from_pretrained(
+  File "/usr/local/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 718, in from_pretrained
+    tokenizer_config = get_tokenizer_config(pretrained_model_name_or_path, **kwargs)
+  File "/usr/local/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 550, in get_tokenizer_config
+    resolved_config_file = cached_file(
+  File "/usr/local/lib/python3.10/site-packages/transformers/utils/hub.py", line 430, in cached_file
+    resolved_file = hf_hub_download(
+  File "/usr/local/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 110, in _inner_fn
+    validate_repo_id(arg_value)
+  File "/usr/local/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 158, in validate_repo_id
+    raise HFValidationError(
+huggingface_hub.utils._validators.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/out/structureLLM/llama-2-7b-structured-binutils-objcopy-mix-hex-mutator'. Use `repo_type` argument if needed.
+/usr/local/lib/python3.10/site-packages/tyro/_fields.py:342: UserWarning: The field base_model_name_or_path is annotated with type <class 'str'>, but the default value None has type <class 'NoneType'>. We'll try to handle this gracefully, but it may cause unexpected behavior.
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_fields.py:342: UserWarning: The field revision is annotated with type <class 'str'>, but the default value None has type <class 'NoneType'>. We'll try to handle this gracefully, but it may cause unexpected behavior.
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'set'> does not match any type in Union: [<class 'list'>, <class 'str'>, <class 'NoneType'>]
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'NoneType'> does not match any type in Union: [<class 'str'>, <enum 'PeftType'>]
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'NoneType'> does not match any type in Union: [<class 'str'>, <enum 'TaskType'>]
+  warnings.warn(
+Traceback (most recent call last):
+  File "/out/structureLLM/llama2_mutator.py", line 340, in <module>
+    main()
+  File "/out/structureLLM/llama2_mutator.py", line 182, in main
+    tokenizer = AutoTokenizer.from_pretrained(
+  File "/usr/local/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 718, in from_pretrained
+    tokenizer_config = get_tokenizer_config(pretrained_model_name_or_path, **kwargs)
+  File "/usr/local/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 550, in get_tokenizer_config
+    resolved_config_file = cached_file(
+  File "/usr/local/lib/python3.10/site-packages/transformers/utils/hub.py", line 430, in cached_file
+    resolved_file = hf_hub_download(
+  File "/usr/local/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 110, in _inner_fn
+    validate_repo_id(arg_value)
+  File "/usr/local/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 158, in validate_repo_id
+    raise HFValidationError(
+huggingface_hub.utils._validators.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/out/structureLLM/llama-2-7b-structured-binutils-objcopy-mix-hex-mutator'. Use `repo_type` argument if needed.
+/usr/local/lib/python3.10/site-packages/tyro/_fields.py:342: UserWarning: The field base_model_name_or_path is annotated with type <class 'str'>, but the default value None has type <class 'NoneType'>. We'll try to handle this gracefully, but it may cause unexpected behavior.
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_fields.py:342: UserWarning: The field revision is annotated with type <class 'str'>, but the default value None has type <class 'NoneType'>. We'll try to handle this gracefully, but it may cause unexpected behavior.
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'set'> does not match any type in Union: [<class 'list'>, <class 'str'>, <class 'NoneType'>]
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'NoneType'> does not match any type in Union: [<class 'str'>, <enum 'PeftType'>]
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'NoneType'> does not match any type in Union: [<class 'str'>, <enum 'TaskType'>]
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_fields.py:342: UserWarning: The field base_model_name_or_path is annotated with type <class 'str'>, but the default value None has type <class 'NoneType'>. We'll try to handle this gracefully, but it may cause unexpected behavior.
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_fields.py:342: UserWarning: The field revision is annotated with type <class 'str'>, but the default value None has type <class 'NoneType'>. We'll try to handle this gracefully, but it may cause unexpected behavior.
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'set'> does not match any type in Union: [<class 'list'>, <class 'str'>, <class 'NoneType'>]
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'NoneType'> does not match any type in Union: [<class 'str'>, <enum 'PeftType'>]
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'NoneType'> does not match any type in Union: [<class 'str'>, <enum 'TaskType'>]
+  warnings.warn(
+Traceback (most recent call last):
+  File "/out/structureLLM/llama2_mutator.py", line 340, in <module>
+    main()
+  File "/out/structureLLM/llama2_mutator.py", line 182, in main
+    tokenizer = AutoTokenizer.from_pretrained(
+  File "/usr/local/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 718, in from_pretrained
+    tokenizer_config = get_tokenizer_config(pretrained_model_name_or_path, **kwargs)
+  File "/usr/local/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 550, in get_tokenizer_config
+    resolved_config_file = cached_file(
+  File "/usr/local/lib/python3.10/site-packages/transformers/utils/hub.py", line 430, in cached_file
+    resolved_file = hf_hub_download(
+  File "/usr/local/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 110, in _inner_fn
+    validate_repo_id(arg_value)
+  File "/usr/local/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 158, in validate_repo_id
+    raise HFValidationError(
+huggingface_hub.utils._validators.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/out/structureLLM/llama-2-7b-structured-binutils-objcopy-mix-hex-mutator'. Use `repo_type` argument if needed.
+Traceback (most recent call last):
+  File "/out/structureLLM/llama2_mutator.py", line 340, in <module>
+    main()
+  File "/out/structureLLM/llama2_mutator.py", line 182, in main
+    tokenizer = AutoTokenizer.from_pretrained(
+  File "/usr/local/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 718, in from_pretrained
+    tokenizer_config = get_tokenizer_config(pretrained_model_name_or_path, **kwargs)
+  File "/usr/local/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 550, in get_tokenizer_config
+    resolved_config_file = cached_file(
+  File "/usr/local/lib/python3.10/site-packages/transformers/utils/hub.py", line 430, in cached_file
+    resolved_file = hf_hub_download(
+  File "/usr/local/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 110, in _inner_fn
+    validate_repo_id(arg_value)
+  File "/usr/local/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 158, in validate_repo_id
+    raise HFValidationError(
+huggingface_hub.utils._validators.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/out/structureLLM/llama-2-7b-structured-binutils-objcopy-mix-hex-mutator'. Use `repo_type` argument if needed.
+/usr/local/lib/python3.10/site-packages/tyro/_fields.py:342: UserWarning: The field base_model_name_or_path is annotated with type <class 'str'>, but the default value None has type <class 'NoneType'>. We'll try to handle this gracefully, but it may cause unexpected behavior.
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_fields.py:342: UserWarning: The field revision is annotated with type <class 'str'>, but the default value None has type <class 'NoneType'>. We'll try to handle this gracefully, but it may cause unexpected behavior.
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'set'> does not match any type in Union: [<class 'list'>, <class 'str'>, <class 'NoneType'>]
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'NoneType'> does not match any type in Union: [<class 'str'>, <enum 'PeftType'>]
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'NoneType'> does not match any type in Union: [<class 'str'>, <enum 'TaskType'>]
+  warnings.warn(
+Traceback (most recent call last):
+  File "/out/structureLLM/llama2_mutator.py", line 340, in <module>
+/usr/local/lib/python3.10/site-packages/tyro/_fields.py:342: UserWarning: The field base_model_name_or_path is annotated with type <class 'str'>, but the default value None has type <class 'NoneType'>. We'll try to handle this gracefully, but it may cause unexpected behavior.
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_fields.py:342: UserWarning: The field revision is annotated with type <class 'str'>, but the default value None has type <class 'NoneType'>. We'll try to handle this gracefully, but it may cause unexpected behavior.
+  warnings.warn(
+    main()
+  File "/out/structureLLM/llama2_mutator.py", line 182, in main
+    tokenizer = AutoTokenizer.from_pretrained(
+  File "/usr/local/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 718, in from_pretrained
+    tokenizer_config = get_tokenizer_config(pretrained_model_name_or_path, **kwargs)
+  File "/usr/local/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 550, in get_tokenizer_config
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'set'> does not match any type in Union: [<class 'list'>, <class 'str'>, <class 'NoneType'>]
+  warnings.warn(
+    resolved_config_file = cached_file(
+  File "/usr/local/lib/python3.10/site-packages/transformers/utils/hub.py", line 430, in cached_file
+    resolved_file = hf_hub_download(
+  File "/usr/local/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 110, in _inner_fn
+    validate_repo_id(arg_value)
+  File "/usr/local/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 158, in validate_repo_id
+    raise HFValidationError(
+huggingface_hub.utils._validators.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/out/structureLLM/llama-2-7b-structured-binutils-objcopy-mix-hex-mutator'. Use `repo_type` argument if needed.
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'NoneType'> does not match any type in Union: [<class 'str'>, <enum 'PeftType'>]
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'NoneType'> does not match any type in Union: [<class 'str'>, <enum 'TaskType'>]
+  warnings.warn(
+Traceback (most recent call last):
+  File "/out/structureLLM/llama2_mutator.py", line 340, in <module>
+    main()
+  File "/out/structureLLM/llama2_mutator.py", line 182, in main
+    tokenizer = AutoTokenizer.from_pretrained(
+  File "/usr/local/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 718, in from_pretrained
+    tokenizer_config = get_tokenizer_config(pretrained_model_name_or_path, **kwargs)
+  File "/usr/local/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 550, in get_tokenizer_config
+    resolved_config_file = cached_file(
+  File "/usr/local/lib/python3.10/site-packages/transformers/utils/hub.py", line 430, in cached_file
+    resolved_file = hf_hub_download(
+  File "/usr/local/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 110, in _inner_fn
+    validate_repo_id(arg_value)
+  File "/usr/local/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 158, in validate_repo_id
+    raise HFValidationError(
+huggingface_hub.utils._validators.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/out/structureLLM/llama-2-7b-structured-binutils-objcopy-mix-hex-mutator'. Use `repo_type` argument if needed.
+/usr/local/lib/python3.10/site-packages/tyro/_fields.py:342: UserWarning: The field base_model_name_or_path is annotated with type <class 'str'>, but the default value None has type <class 'NoneType'>. We'll try to handle this gracefully, but it may cause unexpected behavior.
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_fields.py:342: UserWarning: The field revision is annotated with type <class 'str'>, but the default value None has type <class 'NoneType'>. We'll try to handle this gracefully, but it may cause unexpected behavior.
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'set'> does not match any type in Union: [<class 'list'>, <class 'str'>, <class 'NoneType'>]
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'NoneType'> does not match any type in Union: [<class 'str'>, <enum 'PeftType'>]
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'NoneType'> does not match any type in Union: [<class 'str'>, <enum 'TaskType'>]
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_fields.py:342: UserWarning: The field base_model_name_or_path is annotated with type <class 'str'>, but the default value None has type <class 'NoneType'>. We'll try to handle this gracefully, but it may cause unexpected behavior.
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_fields.py:342: UserWarning: The field revision is annotated with type <class 'str'>, but the default value None has type <class 'NoneType'>. We'll try to handle this gracefully, but it may cause unexpected behavior.
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'set'> does not match any type in Union: [<class 'list'>, <class 'str'>, <class 'NoneType'>]
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'NoneType'> does not match any type in Union: [<class 'str'>, <enum 'PeftType'>]
+  warnings.warn(
+/usr/local/lib/python3.10/site-packages/tyro/_resolver.py:360: UserWarning: <class 'NoneType'> does not match any type in Union: [<class 'str'>, <enum 'TaskType'>]
+  warnings.warn(
+Traceback (most recent call last):
+  File "/out/structureLLM/llama2_mutator.py", line 340, in <module>
+    main()
+  File "/out/structureLLM/llama2_mutator.py", line 182, in main
+    tokenizer = AutoTokenizer.from_pretrained(
+  File "/usr/local/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 718, in from_pretrained
+    tokenizer_config = get_tokenizer_config(pretrained_model_name_or_path, **kwargs)
+  File "/usr/local/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 550, in get_tokenizer_config
+    resolved_config_file = cached_file(
+  File "/usr/local/lib/python3.10/site-packages/transformers/utils/hub.py", line 430, in cached_file
+    resolved_file = hf_hub_download(
+  File "/usr/local/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 110, in _inner_fn
+    validate_repo_id(arg_value)
+  File "/usr/local/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 158, in validate_repo_id
+    raise HFValidationError(
+huggingface_hub.utils._validators.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/out/structureLLM/llama-2-7b-structured-binutils-objcopy-mix-hex-mutator'. Use `repo_type` argument if needed.
+Traceback (most recent call last):
+  File "/out/structureLLM/llama2_mutator.py", line 340, in <module>
+    main()
+  File "/out/structureLLM/llama2_mutator.py", line 182, in main
+    tokenizer = AutoTokenizer.from_pretrained(
+  File "/usr/local/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 718, in from_pretrained
+    tokenizer_config = get_tokenizer_config(pretrained_model_name_or_path, **kwargs)
+  File "/usr/local/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 550, in get_tokenizer_config
+    resolved_config_file = cached_file(
+  File "/usr/local/lib/python3.10/site-packages/transformers/utils/hub.py", line 430, in cached_file
+    resolved_file = hf_hub_download(
+  File "/usr/local/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 110, in _inner_fn
+    validate_repo_id(arg_value)
+  File "/usr/local/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 158, in validate_repo_id
+    raise HFValidationError(
+huggingface_hub.utils._validators.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/out/structureLLM/llama-2-7b-structured-binutils-objcopy-mix-hex-mutator'. Use `repo_type` argument if needed.
+[1;94m[*] [0mFuzzing test case #195 (204 total, 0 crashes saved, state: started :-), mode=explore, perf_score=0, weight=0, favorite=1, was_fuzzed=0, exec_us=929, hits=1, map=852, ascii=0, run_time=0:00:00:27)...[0m
+[1;94m[*] [0mFuzzing test case #20 (204 total, 0 crashes saved, state: started :-), mode=explore, perf_score=300, weight=1128, favorite=1, was_fuzzed=0, exec_us=831, hits=0, map=1181, ascii=0, run_time=0:00:00:27)...[0m
+[1;94m[*] [0mFuzzing test case #181 (431 total, 0 crashes saved, state: started :-), mode=explore, perf_score=300, weight=314, favorite=1, was_fuzzed=0, exec_us=930, hits=1, map=937, ascii=0, run_time=0:00:00:40)...[0m
