@@ -249,7 +249,7 @@ def accelerate_run():
         "--fuzzing_target",
         "binutils",
         "--fuzzing_object",
-        "nm",
+        "objcopy",
         "--temperature",
         "1",
     ]
