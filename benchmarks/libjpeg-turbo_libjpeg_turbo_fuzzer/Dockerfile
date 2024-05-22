@@ -1,4 +1,5 @@
-# Copyright 2020 Google LLC
+# Copyright 2016 Google Inc.
+# Copyright 2022-2023 D. R. Commander
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,31 +15,22 @@
 #
 ################################################################################
 
-FROM gcr.io/oss-fuzz-base/base-builder@sha256:87ca1e9e19235e731fac8de8d1892ebe8d55caf18e7aa131346fc582a2034fdd
-
-RUN apt-get update && \
-    apt-get install -y make yasm cmake
-
-RUN git clone https://github.com/libjpeg-turbo/fuzz && \
+FROM gcr.io/oss-fuzz-base/base-builder@sha256:fb1a9a49752c9e504687448d1f1a048ec1e062e2e40f7e8a23e86b63ff3dad7c
+RUN apt-get update && apt-get install -y make yasm cmake
+RUN git clone --depth 1 https://github.com/libjpeg-turbo/fuzz && \
     cat fuzz/branches.txt | while read branch; do \
-      git clone https://github.com/libjpeg-turbo/libjpeg-turbo \
-          -b $branch libjpeg-turbo.$branch; \
+      git clone --depth 1 https://github.com/libjpeg-turbo/libjpeg-turbo -b $branch libjpeg-turbo.$branch; \
     done
 
-RUN git clone https://github.com/libjpeg-turbo/seed-corpora && \
-    git -C seed-corpora checkout 7c9ea5ffaac76ef618657978c9fdfa845d310b93
-RUN cd seed-corpora && \
-    zip -r ../decompress_fuzzer_seed_corpus.zip \
-        afl-testcases/jpeg* \
-        bugs/decompress* \
-        $SRC/libjpeg-turbo/testimages/*.jpg
-RUN cd seed-corpora && \
-    zip -r ../compress_fuzzer_seed_corpus.zip \
-        afl-testcases/bmp \
-        afl-testcases/gif* \
-        bugs/compress* \
-        $SRC/libjpeg-turbo/testimages/*.bmp \
-        $SRC/libjpeg-turbo/testimages/*.ppm
+RUN git clone --depth 1 https://github.com/libjpeg-turbo/seed-corpora
+RUN cd seed-corpora && zip -r ../decompress_fuzzer_seed_corpus.zip afl-testcases/jpeg* bugs/decompress*
+RUN cat fuzz/branches.txt | while read branch; do \
+      zip -r decompress_fuzzer_seed_corpus.zip libjpeg-turbo.$branch/testimages/*.jpg; \
+    done
+RUN cd seed-corpora && zip -r ../compress_fuzzer_seed_corpus.zip afl-testcases/bmp afl-testcases/gif* afl-testcases/targa bugs/compress*
+RUN cat fuzz/branches.txt | while read branch; do \
+      zip -r compress_fuzzer_seed_corpus.zip libjpeg-turbo.$branch/testimages/*.bmp libjpeg-turbo.$branch/testimages/*.ppm; \
+    done
 RUN rm -rf seed-corpora
 
 COPY build.sh $SRC/

@@ -1,4 +1,5 @@
-# Copyright 2022-2023 D. R. Commander
+#!/bin/bash -eu
+# Copyright 2023 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,15 +15,15 @@
 #
 ################################################################################
 
-set -e
-set -u
+# build and install cgif
+meson setup -Dfuzzer=true --prefix=$WORK --libdir=lib --default-library=static build
+meson install -C build
+# run tests:
+# This is going to generate the seed corpus from all the tests
+meson test -C build
 
-cat fuzz/branches.txt | while read branch; do
-	pushd libjpeg-turbo.$branch
-	if [ "$branch" = "main" ]; then
-		sh fuzz/build.sh
-	else
-		sh fuzz/build.sh _$branch
-	fi
-	popd
-done
+cp "build/fuzz/cgif_fuzzer_seed_corpus.zip" $OUT/.
+
+# build cgif's fuzz target
+$CXX $CXXFLAGS -o "$OUT/cgif_fuzzer" -I"$WORK/include" \
+  $LIB_FUZZING_ENGINE fuzz/cgif_fuzzer.c "$WORK/lib/libcgif.a"

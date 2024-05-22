@@ -1,4 +1,4 @@
-# Copyright 2022-2023 D. R. Commander
+# Copyright 2016 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,15 +14,12 @@
 #
 ################################################################################
 
-set -e
-set -u
+FROM gcr.io/oss-fuzz-base/base-builder@sha256:fb1a9a49752c9e504687448d1f1a048ec1e062e2e40f7e8a23e86b63ff3dad7c
+RUN apt-get update -y && apt-get install -y cmake make pkg-config
 
-cat fuzz/branches.txt | while read branch; do
-	pushd libjpeg-turbo.$branch
-	if [ "$branch" = "main" ]; then
-		sh fuzz/build.sh
-	else
-		sh fuzz/build.sh _$branch
-	fi
-	popd
-done
+# https://github.com/abseil/abseil-cpp/issues/1524#issuecomment-1739364093
+# explains why Abseil must be built for fuzzing, not depended on normally.
+RUN git clone --depth=1 https://github.com/abseil/abseil-cpp
+RUN git clone --depth 1 https://github.com/google/re2
+
+COPY build.sh $SRC/

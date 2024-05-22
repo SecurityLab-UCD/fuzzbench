@@ -1,4 +1,5 @@
-# Copyright 2022-2023 D. R. Commander
+#!/bin/bash -ex
+# Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,18 +12,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-################################################################################
 
 set -e
 set -u
 
 cat fuzz/branches.txt | while read branch; do
-	pushd libjpeg-turbo.$branch
-	if [ "$branch" = "main" ]; then
-		sh fuzz/build.sh
-	else
-		sh fuzz/build.sh _$branch
-	fi
-	popd
+    pushd libjpeg-turbo.$branch
+    if [ "$branch" = "main" ]; then
+        sh fuzz/build.sh
+    else
+        sh fuzz/build.sh _$branch
+    fi
+    popd
 done

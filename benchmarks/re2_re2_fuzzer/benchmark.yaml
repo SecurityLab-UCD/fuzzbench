@@ -1,0 +1,4 @@
+commit: a771d3fbe7c432dc4db68360c6c0004fdde5646b
+commit_date: 2024-05-20 13:56:46+00:00
+fuzz_target: re2_fuzzer
+project: re2
