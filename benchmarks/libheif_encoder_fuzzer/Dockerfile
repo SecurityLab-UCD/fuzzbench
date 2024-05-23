@@ -1,4 +1,4 @@
-# Copyright 2023 Google Inc.
+# Copyright 2019 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,8 +15,41 @@
 ################################################################################
 
 FROM gcr.io/oss-fuzz-base/base-builder@sha256:fb1a9a49752c9e504687448d1f1a048ec1e062e2e40f7e8a23e86b63ff3dad7c
-RUN apt-get update && apt-get install -y python3-pip zip
-RUN pip3 install meson ninja
-RUN git clone --depth 1 https://github.com/dloebl/cgif.git
-WORKDIR cgif
+
+
+RUN apt-get update && apt-get install -y \
+    autoconf \
+    automake \
+    build-essential \
+    cmake \
+    libtool \
+    make \
+    mercurial \
+    pkg-config \
+    yasm
+
+RUN git clone \
+    --depth 1 \
+    --branch master \
+    https://github.com/strukturag/libde265.git \
+    libde265
+
+RUN git clone \
+    https://bitbucket.org/multicoreware/x265_git/src/stable/ \
+    x265
+
+RUN git clone \
+    --depth 1 \
+    --branch master \
+    https://aomedia.googlesource.com/aom \
+    aom
+
+RUN git clone \
+    --depth 1 \
+    --branch master \
+    https://github.com/strukturag/libheif.git \
+    libheif
+
+WORKDIR libheif
+
 COPY build.sh $SRC/

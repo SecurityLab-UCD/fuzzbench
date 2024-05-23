@@ -1,0 +1,4 @@
+commit: e64bb552f5d48fee5daf69c8c2fd59ec3eee0818
+commit_date: 2024-05-08 17:50:14+00:00
+fuzz_target: encoder_fuzzer
+project: libheif

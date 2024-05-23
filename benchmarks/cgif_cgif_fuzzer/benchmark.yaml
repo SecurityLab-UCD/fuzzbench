@@ -1,4 +1,0 @@
-commit: 43976ce4ace9ad60ba3cf7cf5aaabc2d480170f9
-commit_date: 2024-04-03 22:08:23+00:00
-fuzz_target: cgif_fuzzer
-project: cgif
