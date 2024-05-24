@@ -19,7 +19,7 @@ export HOME=/home/chronos
 mkdir -p $HOME
 docker-credential-gcr configure-docker -include-artifact-registry
 echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
-docker run --rm --gpus all \
+docker run --rm --gpus all --cpus 5 \
   -e INSTANCE_NAME={{instance_name}} \
   -e EXPERIMENT={{experiment}} \
   -e CLOUD_PROJECT={{cloud_project}} \
