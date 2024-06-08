@@ -7,6 +7,15 @@ easier for the community to adopt. We invite members of the research community
 to contribute their fuzzers and give us feedback on improving our evaluation
 techniques.
 
+This repository contains a revised version of Fuzzbench, enhanced with GPU support for the Magma framework. We introduce LLAMAFUZZ, a new fuzzing implementation, integrated into the aflpp_llm fuzzer.
+In this revision, we have:
+
+- Added GPU support to the Fuzzbench framework.
+
+"""Note""": Fuzzbench reley on docker as container for experiment, which need git repo specification for set up. We removed the specification of git repository for LLAMAFUZZ to ensure anonymity in reviews. To run the LLAMAFUZZ, you need to add them back.
+
+LLAMAFUZZ is implemented in '/fuzzers/aflpp_llm' and prefix start with '/fuzzers/aflpp_llm' for different object.
+
 FuzzBench provides:
 
 * An easy API for integrating fuzzers.
